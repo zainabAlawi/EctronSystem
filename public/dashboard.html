@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إكترون</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="translations.js"></script>
+    <style>
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(2px);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            font-family: 'Cairo', sans-serif;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+        }
+        .close-modal {
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-modal:hover {
+            color: #ef4444;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.95rem;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar (Right side - RTL) -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-industry"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="brand-name" data-i18n="brand_name">إكترون</span>
+                    <span class="brand-sub" data-i18n="brand_sub">إدارة خطوط الإنتاج</span>
+                </div>
+            </div>
+            <nav>
+                <ul id="sidebar-menu">
+                    <li data-target="overview" class="active"><i class="fas fa-th-large"></i data-i18n="menu_home"> الصفحة الرئيسية</li>
+                    <li data-target="documents"><i class="fas fa-file-alt"></i data-i18n="menu_docs"> المستندات</li>
+                    <li data-target="reports"><i class="fas fa-calendar-alt"></i data-i18n="menu_reports" data-i18n="reports_title"> التقارير الشهرية</li>
+                    <li data-target="shifts"><i class="fas fa-clock"></i data-i18n="menu_shifts"> إدارة الورديات</li>
+                    <li data-target="production-line"><i class="fas fa-cogs"></i data-i18n="menu_lines" data-i18n="lines_title"> خطوط الإنتاج</li>
+                    <li data-target="users"><i class="fas fa-users"></i data-i18n="menu_users" data-i18n="users_title"> إدارة المستخدمين</li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button class="footer-btn"><i class="fas fa-headset"></i data-i18n="support"> الدعم الفني</button>
+                <button class="footer-btn logout" onclick="window.location.href='/'"><i class="fas fa-sign-out-alt"></i data-i18n="logout"> تسجيل الخروج</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-nav" style="justify-content: flex-end;">
+                <div class="nav-left">
+                    <div class="profile">
+                        <img src="https://i.pravatar.cc/150?u=ahmed" alt="User">
+                    </div>
+                    <div class="nav-icons" style="display: flex; align-items: center; gap: 15px;">
+                        <button id="langToggleBtn" class="btn secondary small-btn" onclick="toggleLanguage()" style="padding: 2px 8px; font-weight: bold; border-radius: 4px; cursor: pointer;">EN</button>
+                        <i class="fas fa-cog" style="cursor: pointer;"></i>
+                        <div class="notification" style="cursor: pointer;">
+                            <i class="fas fa-bell"></i>
+                            <span class="dot"></span>
+                        </div>
+                    </div>
+                </div>
+                
+
+            </header>
+
+            <!-- Overview Section -->
+            <section id="overview" class="content-section active">
+                <div class="overview-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h1 data-i18n="welcome" style="margin: 0; font-size: 1.8rem; color: #1e293b; font-weight: 700;">مرحباً بك، المهندس أحمد</h1>
+                    <div class="date-time" data-i18n="date_time" style="color: #1e40af; font-weight: 600; font-size: 1rem;">الأربعاء، 22 مايو 2024 | 09:42 ص</div>
+                </div>
+
+                <div class="kpi-row" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+                    <!-- Three Phase -->
+                    <div class="kpi-card" style="background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center;">
+                        <div class="kpi-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                            <div class="kpi-icon-box" style="width: 40px; height: 40px; background: #eff6ff; color: #1e40af; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;"><i class="fas fa-tachometer-alt"></i></div>
+                            <span class="trend positive" style="color: #10b981; font-weight: bold; font-size: 0.9rem; direction: ltr;">+12% <i class="fas fa-arrow-up"></i></span>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label" data-i18n="kpi_three_title" style="color: #64748b; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; min-height: 40px;">إجمالي إنتاج عدادات الكهرباء الذكية Three Phase</span>
+                            <div class="kpi-value" style="font-size: 2.2rem; font-weight: 700; color: #1e40af; margin-bottom: 0.25rem;">4,280</div>
+                            <span class="kpi-subtext" data-i18n="kpi_unit" style="color: #94a3b8; font-size: 0.85rem;">وحدة</span>
+                        </div>
+                    </div>
+                    <!-- Single Phase -->
+                    <div class="kpi-card" style="background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center;">
+                        <div class="kpi-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                            <div class="kpi-icon-box" style="width: 40px; height: 40px; background: #f8fafc; color: #64748b; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;"><i class="fas fa-bolt"></i></div>
+                            <span class="update-time" style="color: #94a3b8; font-size: 0.85rem;">آخر تحديث: 5د</span>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label" data-i18n="kpi_single_title" style="color: #64748b; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; min-height: 40px;">إجمالي إنتاج عدادات الكهرباء الذكية Single Phase</span>
+                            <div class="kpi-value" style="font-size: 2.2rem; font-weight: 700; color: #1e40af; margin-bottom: 0.25rem;">88%</div>
+                            <div class="kpi-progress" style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 0.5rem;"><div class="progress-bar" style="width: 88%; background: #1e40af; height: 100%;"></div></div>
+                        </div>
+                    </div>
+                    <!-- Water -->
+                    <div class="kpi-card" style="background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center;">
+                        <div class="kpi-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                            <div class="kpi-icon-box" style="width: 40px; height: 40px; background: #eff6ff; color: #3b82f6; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;"><i class="fas fa-tint"></i></div>
+                        </div>
+                        <div class="kpi-body">
+                            <span class="kpi-label" data-i18n="kpi_water_title" style="color: #64748b; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; min-height: 40px;">إجمالي إنتاج عدادات المياه الذكية Seconia</span>
+                            <div class="kpi-value" style="font-size: 2.2rem; font-weight: 700; color: #1e40af; margin-bottom: 0.25rem;">100K</div>
+                            <span class="kpi-subtext" data-i18n="kpi_water_sub" style="color: #94a3b8; font-size: 0.85rem;">عداد مياه ذكية</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem;">
+                    <div class="grid-main">
+                        <div class="card chart-card" style="background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); height: 100%;">
+                            <div class="chart-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+                                <div class="chart-title">
+                                    <h3 data-i18n="chart_prod_title" style="color: #1e293b; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.25rem;">الإنتاج الحالي</h3>
+                                    <span data-i18n="chart_prod_sub" style="color: #64748b; font-size: 0.9rem;">تحليل بيانات الإنتاج</span>
+                                </div>
+                                <div class="chart-toggle" style="display: flex; background: #f1f5f9; border-radius: 6px; padding: 2px;">
+                                    <button id="btnDailyChart" class="toggle-btn" data-i18n="btn_daily" style="border: none; background: none; padding: 0.4rem 1rem; border-radius: 4px; font-family: inherit; font-weight: 600; color: #64748b; cursor: pointer;">يومي</button>
+                                    <button id="btnWeeklyChart" class="toggle-btn active" data-i18n="btn_weekly" style="border: none; background: #1e40af; padding: 0.4rem 1rem; border-radius: 4px; font-family: inherit; font-weight: 600; color: #fff; cursor: pointer;">أسبوعي</button>
+                                </div>
+                            </div>
+                            <div class="chart-container" style="height: 300px; position: relative;"><canvas id="mainProductionChart"></canvas></div>
+                            <div class="chart-legend" style="display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem;">
+                                <div class="legend-item" style="display: flex; align-items: center; gap: 0.5rem; color: #64748b; font-size: 0.85rem;"><span class="dot" style="width: 10px; height: 10px; border-radius: 50%; background: #10b981;"></span> عدادات الكهرباء الذكية Three Phase</div>
+                                <div class="legend-item" style="display: flex; align-items: center; gap: 0.5rem; color: #64748b; font-size: 0.85rem;"><span class="dot" style="width: 10px; height: 10px; border-radius: 50%; background: #1e40af;"></span> عدادات المياه الذكية</div>
+                                <div class="legend-item" style="display: flex; align-items: center; gap: 0.5rem; color: #64748b; font-size: 0.85rem;"><span class="dot" style="width: 10px; height: 10px; border-radius: 50%; background: #64748b;"></span> عدادات الكهرباء الذكية Single Phase</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid-side" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <div class="card latest-updates" style="background: #eff6ff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                            <div class="card-header" style="margin-bottom: 1.5rem;"><h3 style="color: #1e40af; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-rss"></i> <span data-i18n="latest_updates">آخر التحديثات</span></h3></div>
+                            <ul class="update-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1.5rem;">
+                                <li style="display: flex; gap: 1rem; position: relative;">
+                                    <span class="status-dot green" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; margin-top: 6px;"></span>
+                                    <div class="update-info" style="display: flex; flex-direction: column;">
+                                        <strong data-i18n="update_1_b" style="color: #1e293b; font-size: 0.95rem; margin-bottom: 0.25rem;">اكتمال طلبية رقم #4829</strong>
+                                        <span data-i18n="update_1_span" style="color: #64748b; font-size: 0.8rem;">قبل دقيقتين - خط الإنتاج أ</span>
+                                    </div>
+                                </li>
+                                <li style="display: flex; gap: 1rem; position: relative;">
+                                    <span class="status-dot yellow" style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; margin-top: 6px;"></span>
+                                    <div class="update-info" style="display: flex; flex-direction: column;">
+                                        <strong data-i18n="update_2_b" style="color: #1e293b; font-size: 0.95rem; margin-bottom: 0.25rem;">إيقاف مجدول للماكينة M-04</strong>
+                                        <span data-i18n="update_2_span" style="color: #64748b; font-size: 0.8rem;">قبل 15 دقيقة - قسم المعايرة</span>
+                                    </div>
+                                </li>
+                                <li style="display: flex; gap: 1rem; position: relative;">
+                                    <span class="status-dot blue" style="width: 8px; height: 8px; border-radius: 50%; background: #1e40af; margin-top: 6px;"></span>
+                                    <div class="update-info" style="display: flex; flex-direction: column;">
+                                        <strong data-i18n="update_3_b" style="color: #1e293b; font-size: 0.95rem; margin-bottom: 0.25rem;">بداية وردية المهندس ياسر</strong>
+                                        <span data-i18n="update_3_span" style="color: #64748b; font-size: 0.8rem;">قبل ساعة - الطابق الثالث</span>
+                                    </div>
+                                </li>
+                            </ul>
+                            <a href="#" class="view-all" data-i18n="view_all" style="display: block; text-align: center; margin-top: 1.5rem; color: #1e40af; text-decoration: none; font-weight: 700; font-size: 0.9rem;">عرض جميع السجلات</a>
+                        </div>
+                        <div class="card quick-actions" style="background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                            <div class="card-header" style="margin-bottom: 1.5rem;"><h3 data-i18n="quick_actions" style="color: #1e293b; font-size: 1.1rem;">إجراءات سريعة</h3></div>
+                            <div class="action-buttons" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <button class="action-btn" onclick="showSection('add-report')" style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: none; padding: 1rem 1.25rem; border-radius: 8px; cursor: pointer; transition: background 0.2s;">
+                                    <span data-i18n="action_add_read" style="color: #1e293b; font-weight: 600; font-size: 0.95rem;">إضافة قراءة جديدة</span>
+                                    <i class="fas fa-plus-circle" style="color: #1e40af; font-size: 1.2rem;"></i>
+                                </button>
+                                <button class="action-btn" style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: none; padding: 1rem 1.25rem; border-radius: 8px; cursor: pointer; transition: background 0.2s;">
+                                    <span data-i18n="action_daily_report" style="color: #1e293b; font-weight: 600; font-size: 0.95rem;">تقرير التصنيع اليومي</span>
+                                    <i class="fas fa-file-invoice" style="color: #1e40af; font-size: 1.2rem;"></i>
+                                </button>
+                                <button class="action-btn" style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: none; padding: 1rem 1.25rem; border-radius: 8px; cursor: pointer; transition: background 0.2s;">
+                                    <span data-i18n="action_contact_support" style="color: #1e293b; font-weight: 600; font-size: 0.95rem;">تواصل مع الدعم الفني</span>
+                                    <i class="fas fa-life-ring" style="color: #1e40af; font-size: 1.2rem;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section">
+                <div class="reports-header-area">
+                    <div class="reports-title-box">
+                        <h1 data-i18n="menu_reports" data-i18n="reports_title">التقارير الشهرية</h1>
+                        <p data-i18n="reports_desc">نظرة شاملة على أداء خطوط الإنتاج والتقييم - أكتوبر ٢٠٢٣</p>
+                    </div>
+                    <div class="reports-actions">
+                        <button class="btn secondary action-btn" onclick="showWMContent(this)"><i class="fas fa-sync"></i> WM</button>
+                        <button class="btn secondary action-btn" onclick="showReportsPlaceholder(this)"><i class="fas fa-bolt"></i> Single Phase ESM</button>
+                        <button class="btn secondary action-btn" onclick="showSection('reports'); setReportContext('Three Phase ESM', this)"><i class="fas fa-plug"></i> Three Phase ESM</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 id="report-context-title" style="display: none; color: #1e40af; font-size: 1.2rem; font-weight: bold; margin: 0;"></h2>
+                    <button class="btn primary add-report-btn" onclick="showSection('add-report')"><i class="fas fa-plus"></i data-i18n="btn_add_report"> إضافة تقرير</button>
+                </div>
+                <div class="reports-kpi-grid">
+                    <div class="kpi-card text-center">
+                        <span class="kpi-label" data-i18n="kpi_accuracy">معدل الدقة</span>
+                        <div class="kpi-value text-green"><i class="fas fa-check-circle"></i> ٩٩.٨٪</div>
+                        <span class="kpi-subtext" data-i18n="kpi_accuracy_sub">ضمن معايير الجودة القياسية</span>
+                    </div>
+                    <div class="kpi-card text-center">
+                        <span class="kpi-label" data-i18n="kpi_yearly">إجمالي الإنتاج السنوي</span>
+                        <div class="kpi-value">١٠٠,٠٠٠ <i class="fas fa-arrow-trend-up text-green" style="font-size: 0.8rem;"></i></div>
+                        <span class="kpi-subtext" data-i18n="kpi_yearly_sub">عداد كهرباء ذكي</span>
+                    </div>
+                    <div class="kpi-card text-center">
+                        <span class="kpi-label" data-i18n="kpi_monthly">إجمالي الإنتاج الشهري</span>
+                        <div class="kpi-value">١,٠٠٠ <span class="kpi-unit" data-i18n="kpi_meter_unit">عداد</span></div>
+                        <span class="kpi-subtext" data-i18n="kpi_monthly_sub">عداد منتج في هذا الشهر</span>
+                    </div>
+                    <div class="kpi-card text-center">
+                        <span class="kpi-label" data-i18n="kpi_daily">إجمالي الإنتاج اليومي</span>
+                        <div class="kpi-value text-blue"><span class="trend positive">+١٢٪</span> ١٢,٤٥٠</div>
+                        <span class="kpi-subtext" data-i18n="kpi_daily_sub">عداد منتج هذا اليوم</span>
+                    </div>
+                </div>
+
+                <div class="charts-row-split">
+                    <div class="card chart-card side-chart">
+                        <div class="chart-header">
+                            <div class="chart-title"><h3>توزيع أنواع العدادات</h3><span>حسب الفئة والمواصفات</span></div>
+                        </div>
+                        <div class="chart-container donut-container">
+                            <canvas id="meterTypesChart"></canvas>
+                            <div class="donut-inner-text">
+                                <span class="value">١٢.٤ ألف</span>
+                                <span class="label">إجمالي العدادات</span>
+                            </div>
+                        </div>
+                        <div class="donut-legend">
+                            <div class="legend-item"><span class="dot primary"></span> الربع السنوي الأول <span class="percentage">٪٦٥</span></div>
+                            <div class="legend-item"><span class="dot success"></span> الربع السنوي الثاني <span class="percentage">٪٢٥</span></div>
+                            <div class="legend-item"><span class="dot warning"></span> الربع السنوي الثالث <span class="percentage">٪١٠</span></div>
+                            <div class="legend-item"><span class="dot secondary"></span> الربع السنوي الرابع <span class="percentage">٠٪</span></div>
+                        </div>
+                    </div>
+                    <div class="card chart-card main-chart">
+                        <div class="chart-header">
+                            <div class="chart-title"><h3>مخطط الإنتاج اليومي</h3><span>نظرة أسبوعية على كمية الإنتاج</span></div>
+                        </div>
+                        <div class="chart-container daily-chart-container">
+                            <canvas id="dailyProductionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card full-chart-row">
+                    <div class="chart-header">
+                        <div class="chart-title"><h3>مخطط الإنتاج الشهري</h3><span>أداء المصنع على مدار السنة</span></div>
+                    </div>
+                    <div class="chart-container full-width">
+                        <canvas id="monthlyProductionChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card data-table-card">
+                    <div class="table-header-flex">
+                        <div class="title-col">
+                            <h3>جدول الإنتاج اليومي</h3>
+                            <span>يوم الأحد، ١٠ مايو ٢٠٢٦</span>
+                        </div>
+                        <button class="btn secondary small-btn">قيد التحديث</button>
+                    </div>
+                    <div class="stages-table-container">
+                        <table class="stages-data-table">
+                            <thead>
+                                <tr>
+                                    <th>المرحلة</th>
+                                    <th>المستهدف</th>
+                                    <th>الفعلي</th>
+                                    <th>الأخطاء</th>
+                                    <th>الانتظار</th>
+                                    <th>ملاحظات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>التجميع (Assembly)</td><td>٤٠٠</td><td class="text-blue">٣١٤</td><td>-</td><td>-</td><td>-</td></tr>
+                                <tr><td>العزل (Insolation)</td><td>٤٠٠</td><td class="text-blue">٣٩٣</td><td>-</td><td>-</td><td>-</td></tr>
+                                <tr><td>تردد الإشعاع (Radiation Frequency)</td><td>٤٠٠</td><td class="text-blue">٣٤٠</td><td>-</td><td>-</td><td>-</td></tr>
+                                <tr><td>المعايرة (Calibration)</td><td>٤٠٠</td><td class="text-blue">٣١٦</td><td>-</td><td>-</td><td>-</td></tr>
+                                <tr><td>الاختبار المتعدد (Multi test)</td><td>٤٠٠</td><td class="text-blue">٢٧٦</td><td>-</td><td>-</td><td>-</td></tr>
+                                <tr><td>المقاييس (Metrology)</td><td>٤٠٠</td><td class="text-blue">٢٧٦</td><td>-</td><td>-</td><td>-</td></tr>
+                                <tr><td>الجودة (Quality)</td><td>٤٠٠</td><td class="text-blue">٢٢٢</td><td>-</td><td>-</td><td>-</td></tr>
+                                <tr><td>منفذ البطاقة (Card Slot)</td><td>٤٠٠</td><td class="text-blue">٣١٤</td><td>-</td><td>-</td><td>-</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add Report Section -->
+            <section id="add-report" class="content-section">
+                <div class="add-report-header">
+                    <div class="add-report-title">
+                        <h1 data-i18n="btn_add_report">إضافة تقرير</h1>
+                        <p>تسجيل بيانات الإنتاج اليومية لمصنع إنتاج العدادات الذكية</p>
+                    </div>
+                    <div class="add-report-actions">
+                        <button class="btn secondary" onclick="showSection('reports')">إلغاء</button>
+                        <button class="btn primary dark">حفظ التقرير</button>
+                    </div>
+                </div>
+
+                <div class="card add-report-form">
+                    <div class="form-row main-fields">
+                        <div class="field-group">
+                            <label>التاريخ</label>
+                            <input type="date" value="2024-05-20">
+                        </div>
+                        <div class="field-group">
+                            <label>اليوم</label>
+                            <input type="text" value="الاثنين" disabled>
+                        </div>
+                        <div class="field-group shift-selection">
+                            <label>الوردية</label>
+                            <div class="shift-toggles">
+                                <button class="shift-btn active">الصباحية</button>
+                                <button class="shift-btn">المسائية</button>
+                                <button class="shift-btn">الليلية</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row target-field">
+                        <div class="target-input-box">
+                            <label>المستهدف</label>
+                            <div class="input-with-unit">
+                                <input type="number" value="400">
+                                <span class="unit" data-i18n="kpi_meter_unit">عداد</span>
+                            </div>
+                        </div>
+                        <div class="target-note">
+                            <i class="fas fa-info-circle"></i>
+                            <span>ملاحظة: هذا المستهدف ينطبق على جميع مراحل الإنتاج لهذا اليوم.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card stages-data-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> بيانات مراحل الإنتاج</h3>
+                    </div>
+                    <div class="stages-table-container">
+                        <table class="stages-input-table">
+                            <thead>
+                                <tr>
+                                    <th>المرحلة</th>
+                                    <th>الإنتاج الفعلي</th>
+                                    <th>الانتظار</th>
+                                    <th>الأخطاء</th>
+                                    <th>ملاحظات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>التجميع (Assembly)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                                <tr><td>العزل (Insolation)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                                <tr><td>تردد الإشعاع (RF)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                                <tr><td>المعايرة (Calibration)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                                <tr><td>الاختبار المتعدد (Multi-test)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                                <tr><td>القياس (Metrology)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                                <tr><td>الجودة (Quality)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                                <tr><td>فتحة البطاقة (Card Slot)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card confirmation-card">
+                    <div class="confirmation-content">
+                        <div class="confirmation-text">
+                            <h3><i class="fas fa-check-circle"></i> تأكيد البيانات النهائية</h3>
+                            <p>يرجى التأكد من دقة الأرقام المدخلة قبل الحفظ. سيتم إرسال هذا التقرير تلقائياً إلى إدارة مراقبة الجودة والإنتاج فور الحفظ.</p>
+                        </div>
+                        <button class="btn primary dark large-save"><i class="fas fa-save"></i> حفظ التقرير</button>
+                    </div>
+                </div>
+
+                <div class="system-footer-status">
+                    <div class="status-indicator">
+                        <span class="dot green"></span>
+                        System Nominal
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add Report WM Section -->
+            <section id="add-report-wm" class="content-section">
+                <div class="add-report-header">
+                    <div class="add-report-title">
+                        <h1>إضافة تقرير لعدادات المياه الذكية</h1>
+                        <p>تسجيل بيانات الإنتاج اليومية لمصنع إنتاج عدادات المياه الذكية (Smart Water Meter)</p>
+                    </div>
+                    <div class="add-report-actions">
+                        <button class="btn secondary" onclick="showSection('reports')">إلغاء</button>
+                        <button class="btn primary dark">حفظ التقرير</button>
+                    </div>
+                </div>
+
+                <div class="card add-report-form">
+                    <div class="form-row main-fields">
+                        <div class="field-group">
+                            <label>التاريخ</label>
+                            <input type="date" value="2025-05-01">
+                        </div>
+                        <div class="field-group">
+                            <label>اليوم</label>
+                            <input type="text" value="الخميس" disabled>
+                        </div>
+                        <div class="field-group shift-selection">
+                            <label>الوردية</label>
+                            <div class="shift-toggles">
+                                <button class="shift-btn active">الصباحية</button>
+                                <button class="shift-btn">المسائية</button>
+                                <button class="shift-btn">الليلية</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row target-field">
+                        <div class="target-input-box">
+                            <label>المستهدف</label>
+                            <div class="input-with-unit">
+                                <input type="number" value="640">
+                                <span class="unit" data-i18n="kpi_meter_unit">عداد</span>
+                            </div>
+                        </div>
+                        <div class="target-note">
+                            <i class="fas fa-info-circle"></i>
+                            <span>ملاحظة: هذا المستهدف ينطبق على جميع مراحل الإنتاج لهذا اليوم.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card stages-data-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> بيانات مراحل الإنتاج لعدادات المياه</h3>
+                    </div>
+                    <div class="stages-table-container">
+                        <table class="stages-input-table">
+                            <thead>
+                                <tr>
+                                    <th>المرحلة</th>
+                                    <th>الإنتاج الفعلي</th>
+                                    <th>الانتظار</th>
+                                    <th>الأخطاء</th>
+                                    <th>ملاحظات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>التجميع (Assembly)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                                <tr><td>التخصيص (Perso)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                                <tr><td>الليزر (Laziring)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                                <tr><td>التغليف (Packaging)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                                <tr><td>الكراتين (Cartons)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                                <tr><td>الطبالي (Pallets)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card confirmation-card">
+                    <div class="confirmation-content">
+                        <div class="confirmation-text">
+                            <h3><i class="fas fa-check-circle"></i> تأكيد البيانات النهائية</h3>
+                            <p>يرجى التأكد من دقة الأرقام المدخلة قبل الحفظ. سيتم إرسال هذا التقرير تلقائياً إلى إدارة مراقبة الجودة والإنتاج فور الحفظ.</p>
+                        </div>
+                        <button class="btn primary dark large-save"><i class="fas fa-save"></i> حفظ التقرير</button>
+                    </div>
+                </div>
+
+                <div class="system-footer-status">
+                    <div class="status-indicator">
+                        <span class="dot green"></span>
+                        System Nominal
+                    </div>
+                </div>
+            </section>
+
+            <!-- Other Placeholders -->
+            <section id="documents" class="content-section"><div class="placeholder-content">قريباً: المستندات.</div></section>
+            <section id="shifts" class="content-section"><div class="placeholder-content">قريباً: إدارة الورديات.</div></section>
+            <section id="production-line" class="content-section">
+                <div class="reports-header-area">
+                    <div class="reports-title-box">
+                        <h1 data-i18n="menu_lines" data-i18n="lines_title">خطوط الإنتاج</h1>
+                        <p data-i18n="lines_desc">إدارة ومراقبة خطوط الإنتاج المختلفة</p>
+                    </div>
+                    <div class="reports-actions">
+                        <button class="btn secondary action-btn" style="background-color: #1e40af; color: #fff;" onclick="switchProductionLine('mt212', this)"><i class="fas fa-bolt"></i data-i18n="line_mt212"> خط انتاج عدادات الكهرباء MT212</button>
+                        <button class="btn secondary action-btn" onclick="switchProductionLine('ecs1100', this)"><i class="fas fa-bolt"></i data-i18n="line_ecs1100"> خط انتاج عدادات الكهرباء ECS1100</button>
+                        <button class="btn secondary action-btn" onclick="switchProductionLine('siconia', this)"><i class="fas fa-tint"></i data-i18n="line_siconia"> خط انتاج عدادات المياه Siconia</button>
+                        <button class="btn secondary action-btn" onclick="switchProductionLine('inventory', this)"><i class="fas fa-box-open"></i data-i18n="line_inventory"> إدارة العهدة</button>
+                    </div>
+                </div>
+                
+                <div id="pl-mt212" class="pl-content" style="display: block;">
+                    <div class="line-header" style="text-align: center; padding-top: 2rem; margin-bottom: 2rem;">
+                        <h2 style="color: #1e40af; margin-bottom: 0.5rem;"><i class="fas fa-bolt"></i data-i18n="line_mt212"> خط انتاج عدادات الكهرباء MT212</h2>
+                    </div>
+                    <div class="cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; padding: 0 2rem; max-width: 900px; margin: 0 auto;">
+                        <div class="card interactive-card" style="text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; padding: 2.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='none'; this.style.boxShadow='var(--card-shadow)'">
+                            <i class="fas fa-network-wired" style="font-size: 3rem; color: #1e40af; margin-bottom: 1rem;"></i>
+                            <h3 style="font-size: 1.25rem; color: #334155; margin-bottom: 0.5rem; font-weight: 600;" data-i18n="prod_stages">مراحل الإنتاج</h3>
+                            <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5;" data-i18n="prod_stages_desc">عرض وتتبع مراحل الإنتاج الحالية والمكتملة للخط.</p>
+                        </div>
+                        <div class="card interactive-card" style="text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; padding: 2.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='none'; this.style.boxShadow='var(--card-shadow)'">
+                            <i class="fas fa-file-alt" style="font-size: 3rem; color: #1e40af; margin-bottom: 1rem;"></i>
+                            <h3 style="font-size: 1.25rem; color: #334155; margin-bottom: 0.5rem; font-weight: 600;" data-i18n="line_report">تقرير التشغيل للخط</h3>
+                            <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5;" data-i18n="line_report_desc">الاطلاع على تقارير الأداء وسير العمل لخط الإنتاج.</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="pl-ecs1100" class="pl-content" style="display: none;">
+                    <div class="line-header" style="text-align: center; padding-top: 2rem; margin-bottom: 2rem;">
+                        <h2 style="color: #1e40af; margin-bottom: 0.5rem;"><i class="fas fa-bolt"></i data-i18n="line_ecs1100"> خط انتاج عدادات الكهرباء ECS1100</h2>
+                    </div>
+                    <div class="cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; padding: 0 2rem; max-width: 900px; margin: 0 auto;">
+                        <div class="card interactive-card" style="text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; padding: 2.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='none'; this.style.boxShadow='var(--card-shadow)'">
+                            <i class="fas fa-network-wired" style="font-size: 3rem; color: #1e40af; margin-bottom: 1rem;"></i>
+                            <h3 style="font-size: 1.25rem; color: #334155; margin-bottom: 0.5rem; font-weight: 600;" data-i18n="prod_stages">مراحل الإنتاج</h3>
+                            <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5;" data-i18n="prod_stages_desc">عرض وتتبع مراحل الإنتاج الحالية والمكتملة للخط.</p>
+                        </div>
+                        <div class="card interactive-card" style="text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; padding: 2.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='none'; this.style.boxShadow='var(--card-shadow)'">
+                            <i class="fas fa-file-alt" style="font-size: 3rem; color: #1e40af; margin-bottom: 1rem;"></i>
+                            <h3 style="font-size: 1.25rem; color: #334155; margin-bottom: 0.5rem; font-weight: 600;" data-i18n="line_report">تقرير التشغيل للخط</h3>
+                            <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5;" data-i18n="line_report_desc">الاطلاع على تقارير الأداء وسير العمل لخط الإنتاج.</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="pl-siconia" class="pl-content" style="display: none;">
+                    <div class="line-header" style="text-align: center; padding-top: 2rem; margin-bottom: 2rem;">
+                        <h2 style="color: #10b981; margin-bottom: 0.5rem;"><i class="fas fa-tint"></i data-i18n="line_siconia"> خط انتاج عدادات المياه Siconia</h2>
+                    </div>
+                    <div class="cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; padding: 0 2rem; max-width: 900px; margin: 0 auto;">
+                        <div class="card interactive-card" style="text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; padding: 2.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='none'; this.style.boxShadow='var(--card-shadow)'">
+                            <i class="fas fa-network-wired" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+                            <h3 style="font-size: 1.25rem; color: #334155; margin-bottom: 0.5rem; font-weight: 600;" data-i18n="prod_stages">مراحل الإنتاج</h3>
+                            <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5;" data-i18n="prod_stages_desc">عرض وتتبع مراحل الإنتاج الحالية والمكتملة للخط.</p>
+                        </div>
+                        <div class="card interactive-card" style="text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; padding: 2.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='none'; this.style.boxShadow='var(--card-shadow)'">
+                            <i class="fas fa-file-alt" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+                            <h3 style="font-size: 1.25rem; color: #334155; margin-bottom: 0.5rem; font-weight: 600;" data-i18n="line_report">تقرير التشغيل للخط</h3>
+                            <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5;" data-i18n="line_report_desc">الاطلاع على تقارير الأداء وسير العمل لخط الإنتاج.</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="pl-inventory" class="pl-content" style="display: none;">
+                    <div class="line-header" style="text-align: center; padding-top: 2rem;">
+                        <h2 style="color: #f59e0b; margin-bottom: 0.5rem;"><i class="fas fa-box-open"></i data-i18n="line_inventory"> إدارة العهدة</h2>
+                    </div>
+                    <div class="placeholder-content" style="text-align: center; padding: 2rem; color: #64748b; font-size: 1.2rem;">
+                        نظام إدارة العهدة والمخزون سيظهر هنا...
+                    </div>
+                </div>
+            </section>
+            <section id="users" class="content-section">
+                <div class="reports-header-area">
+                    <div class="reports-title-box">
+                        <h1 id="users-page-title" data-i18n="menu_users" data-i18n="users_title">إدارة المستخدمين</h1>
+                        <p data-i18n="users_desc">إدارة حسابات الموظفين وصلاحيات الدخول للنظام</p>
+                    </div>
+                    <div class="reports-actions">
+                        <button class="btn secondary action-btn" id="archiveBtn" onclick="toggleArchiveView()"><i class="fas fa-archive"></i data-i18n="btn_archive"> الأرشيف</button>
+                        <button class="btn primary action-btn" style="background-color: #1e40af; color: #fff;" onclick="openAddEmployeeModal()"><i class="fas fa-user-plus"></i data-i18n="btn_add_user"> إضافة موظف</button>
+                    </div>
+                </div>
+                
+                <div id="active-users-view">
+                    <div class="card data-table-card">
+                        <div class="stages-table-container">
+                            <table class="stages-data-table" id="employeesTable">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="th_emp_id" data-i18n="label_emp_id">الرقم الوظيفي</th>
+                                        <th data-i18n="th_emp_name" data-i18n="label_emp_name">اسم الموظف</th>
+                                        <th data-i18n="th_emp_role" data-i18n="label_emp_role">الصلاحية</th>
+                                        <th data-i18n="th_emp_pass" data-i18n="label_emp_pass">كلمة المرور</th>
+                                        <th data-i18n="th_emp_actions">الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr id="empty-users-row"><td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">لا يوجد موظفين مضافين حالياً.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="archive-users-view" style="display: none;">
+                    <div class="card data-table-card" style="border-top: 4px solid #ef4444;">
+                        <div class="table-header-flex" style="padding: 1rem 1.5rem; border-bottom: 1px solid #e2e8f0; background-color: #f8fafc;">
+                            <h3 style="margin: 0; color: #ef4444;"><i class="fas fa-archive"></i data-i18n="users_archive_title"> أرشيف الموظفين المحذوفين</h3>
+                        </div>
+                        <div class="stages-table-container">
+                            <table class="stages-data-table" id="archivedEmployeesTable">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="th_emp_id" data-i18n="label_emp_id">الرقم الوظيفي</th>
+                                        <th data-i18n="th_emp_name" data-i18n="label_emp_name">اسم الموظف</th>
+                                        <th data-i18n="th_emp_role" data-i18n="label_emp_role">الصلاحية</th>
+                                        <th data-i18n="th_del_date">تاريخ الحذف</th>
+                                        <th data-i18n="th_emp_actions">الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr id="empty-archive-row"><td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">الأرشيف فارغ.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Add Employee Modal -->
+        <div id="addEmployeeModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-user-plus" style="color: #1e40af; margin-left: 10px;"></i data-i18n="modal_add_title"> إضافة موظف جديد</h2>
+                    <span class="close-modal" onclick="closeAddEmployeeModal()"><i class="fas fa-times"></i></span>
+                </div>
+                <div class="modal-body">
+                    <form id="addEmployeeForm" onsubmit="submitEmployee(event)">
+                        <div class="form-group">
+                            <label data-i18n="th_emp_id" data-i18n="label_emp_id">الرقم الوظيفي</label>
+                            <input type="text" id="empId" placeholder="مثال: 100234" data-i18n-placeholder="ph_emp_id" required>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="th_emp_name" data-i18n="label_emp_name">اسم الموظف</label>
+                            <input type="text" id="empName" placeholder="أدخل الاسم الرباعي" data-i18n-placeholder="ph_emp_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="th_emp_role" data-i18n="label_emp_role">الصلاحية</label>
+                            <select id="empRole" required>
+                                <option value="" disabled selected>اختر الصلاحية...</option>
+                                <option value="operator" data-i18n="role_operator">مشغل</option>
+                                <option value="supervisor" data-i18n="role_supervisor">مشرف</option>
+                                <option value="admin" data-i18n="role_admin">أدمن</option>
+                                <option value="quality" data-i18n="role_quality">إدارة الجودة</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="th_emp_pass" data-i18n="label_emp_pass">كلمة المرور</label>
+                            <input type="password" id="empPassword" placeholder="••••••••" data-i18n-placeholder="ph_emp_pass" required>
+                        </div>
+                        <button type="submit" class="btn primary" style="width: 100%; margin-top: 1rem; padding: 0.75rem; font-size: 1.1rem; background-color: #1e40af; color: #fff; border: none; border-radius: 6px; cursor: pointer;"><i class="fas fa-save"></i data-i18n="btn_save_user"> حفظ بيانات الموظف</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(id) {
+            sections.forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(id);
+            if (target) target.classList.add('active');
+            
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-target') === id) item.classList.add('active');
+            });
+
+            if (id === 'reports') renderReportsCharts();
+        }
+
+        function setReportContext(title, btn) {
+            // Restore main content
+            document.querySelectorAll('#reports > *:not(.reports-header-area):not(.custom-placeholder)').forEach(el => {
+                el.style.display = '';
+            });
+            document.querySelectorAll('.custom-placeholder').forEach(el => el.style.display = 'none');
+
+            // Highlight button
+            document.querySelectorAll('.reports-actions .action-btn').forEach(b => {
+                b.style.backgroundColor = '';
+                b.style.color = '';
+            });
+            if (btn) {
+                btn.style.backgroundColor = '#1e40af';
+                btn.style.color = '#fff';
+            }
+
+            const titleEl = document.getElementById('report-context-title');
+            if (titleEl) {
+                titleEl.textContent = title;
+                titleEl.style.display = 'block';
+            }
+        }
+
+        function showReportsPlaceholder(btn) {
+            // Highlight button
+            document.querySelectorAll('.reports-actions .action-btn').forEach(b => {
+                b.style.backgroundColor = '';
+                b.style.color = '';
+            });
+            if (btn) {
+                btn.style.backgroundColor = '#1e40af';
+                btn.style.color = '#fff';
+            }
+            
+            // Hide main content, show placeholder
+            document.querySelectorAll('#reports > *:not(.reports-header-area)').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            let placeholder = document.getElementById('reports-placeholder');
+            if (!placeholder) {
+                placeholder = document.createElement('div');
+                placeholder.id = 'reports-placeholder';
+                placeholder.className = 'custom-placeholder';
+                placeholder.style.cssText = 'text-align: center; padding: 5rem; font-size: 1.5rem; color: #64748b; font-weight: bold;';
+                placeholder.innerHTML = '<i class="fas fa-tools" style="font-size: 3rem; margin-bottom: 1rem; color: #1e40af;"></i><br>قريباً';
+                document.getElementById('reports').appendChild(placeholder);
+            }
+            placeholder.style.display = 'block';
+        }
+
+        function showWMContent(btn) {
+            // Highlight button
+            document.querySelectorAll('.reports-actions .action-btn').forEach(b => {
+                b.style.backgroundColor = '';
+                b.style.color = '';
+            });
+            if (btn) {
+                btn.style.backgroundColor = '#1e40af';
+                btn.style.color = '#fff';
+            }
+            
+            // Hide main content, show placeholder
+            document.querySelectorAll('#reports > *:not(.reports-header-area)').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            let placeholder = document.getElementById('reports-wm-content');
+            if (!placeholder) {
+                placeholder = document.createElement('div');
+                placeholder.id = 'reports-wm-content';
+                placeholder.className = 'custom-placeholder';
+                placeholder.style.cssText = 'padding: 2rem;';
+                placeholder.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h2 style="color: #1e40af; font-size: 1.5rem; font-weight: bold; margin: 0;"><i class="fas fa-tint"></i> Smart Water Meter</h2>
+                        <button class="btn primary add-report-btn" onclick="showSection('add-report-wm')"><i class="fas fa-plus"></i data-i18n="btn_add_report"> إضافة تقرير</button>
+                    </div>
+                    
+                    <div class="card chart-card main-chart" style="margin-bottom: 2rem;">
+                        <div class="chart-header">
+                            <div class="chart-title"><h3>مخطط الإنتاج اليومي</h3><span>نظرة أسبوعية على كمية الإنتاج لعدادات المياه</span></div>
+                        </div>
+                        <div class="chart-container daily-chart-container" style="height: 300px; position: relative;">
+                            <canvas id="wmDailyProductionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card data-table-card">
+                        <div class="table-header-flex">
+                            <div class="title-col">
+                                <h3>جدول الإنتاج اليومي</h3>
+                                <span>يوم الخميس، ٠١ مايو ٢٠٢٥</span>
+                            </div>
+                            <button class="btn secondary small-btn">قيد التحديث</button>
+                        </div>
+                        <div class="stages-table-container">
+                            <table class="stages-data-table">
+                                <thead>
+                                    <tr>
+                                        <th>المرحلة</th>
+                                        <th>المستهدف</th>
+                                        <th>الفعلي</th>
+                                        <th>الأخطاء</th>
+                                        <th>الانتظار</th>
+                                        <th>الإجمالي</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>التجميع (Assembly)</td><td>٦٤٠</td><td class="text-blue">٦٢٤</td><td>-</td><td>-</td><td>٨٩٢٣</td></tr>
+                                    <tr><td>التخصيص (Perso)</td><td>٦٤٠</td><td class="text-blue">٦٢٤</td><td>-</td><td>-</td><td>٨٩٢٤</td></tr>
+                                    <tr><td>الليزر (Laziring)</td><td>٦٤٠</td><td class="text-blue">٦١٩</td><td>٥</td><td>-</td><td>٨٨٨٨</td></tr>
+                                    <tr><td>التغليف (Packaging)</td><td>٦٤٠</td><td class="text-blue">٦١٩</td><td>-</td><td>-</td><td>٨٥٩٢</td></tr>
+                                    <tr><td>الكراتين (Cartons)</td><td>٦٤</td><td class="text-blue">٦٢</td><td>-</td><td>-</td><td>٨٥٩</td></tr>
+                                    <tr><td>الطبالي (Pallets)</td><td>١</td><td class="text-blue">-</td><td>-</td><td>-</td><td>١٢</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('reports').appendChild(placeholder);
+                
+                // Initialize the chart
+                const wmCtx = document.getElementById('wmDailyProductionChart').getContext('2d');
+                new Chart(wmCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
+                        datasets: [{
+                            label: 'إنتاج عدادات المياه',
+                            data: [820, 890, 850, 910, 892, 0, 0],
+                            backgroundColor: '#10b981',
+                            borderRadius: 5,
+                            barThickness: 15
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: {rtl: true, titleFont: {family: 'Cairo'}, bodyFont: {family: 'Cairo'}} },
+                        scales: {
+                            y: { display: false },
+                            x: { grid: { display: false }, ticks: { font: { family: 'Cairo' }, color: '#64748b' } }
+                        }
+                    }
+                });
+            }
+            placeholder.style.display = 'block';
+        }
+
+        let employeesData = [
+            { id: '10003', name: 'أحمد سالم', role: 'operator', password: 'password123' },
+            { id: '10002', name: 'سارة محمد', role: 'supervisor', password: 'password123' },
+            { id: '10001', name: 'علي حسن', role: 'admin', password: 'password123' }
+        ];
+        let archivedEmployeesData = [];
+        let editingEmployeeId = null;
+
+        let roleLabels = {
+            'operator': 'مشغل',
+            'supervisor': 'مشرف',
+            'admin': 'أدمن',
+            'quality': 'إدارة الجودة'
+        };
+
+        function openAddEmployeeModal(isEdit = false, empId = null) {
+            const modal = document.getElementById('addEmployeeModal');
+            const title = modal.querySelector('.modal-header h2');
+            const form = document.getElementById('addEmployeeForm');
+            
+            if (isEdit && empId) {
+                editingEmployeeId = empId;
+                const emp = employeesData.find(e => e.id === empId);
+                if (emp) {
+                    title.innerHTML = '<i class="fas fa-user-edit" style="color: #1e40af; margin-left: 10px;"></i> تعديل بيانات موظف';
+                    document.getElementById('empId').value = emp.id;
+                    document.getElementById('empId').disabled = true; // Don't allow changing ID
+                    document.getElementById('empName').value = emp.name;
+                    document.getElementById('empRole').value = emp.role;
+                    document.getElementById('empPassword').value = emp.password;
+                }
+            } else {
+                editingEmployeeId = null;
+                title.innerHTML = '<i class="fas fa-user-plus" style="color: #1e40af; margin-left: 10px;"></i> إضافة موظف جديد';
+                document.getElementById('empId').disabled = false;
+                form.reset();
+            }
+            modal.style.display = 'block';
+        }
+
+        let currentLang = 'ar';
+        function toggleLanguage() {
+            const htmlTag = document.documentElement;
+            
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            
+            htmlTag.setAttribute('lang', currentLang);
+            htmlTag.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+            
+            const langDict = window.translations[currentLang];
+            
+            // Update all standard text elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (langDict[key]) {
+                    el.textContent = langDict[key];
+                }
+            });
+            
+            // Update all placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (langDict[key]) {
+                    el.setAttribute('placeholder', langDict[key]);
+                }
+            });
+            
+            // Update JS roles
+            if(window.translations && window.translations[currentLang]) {
+                roleLabels['operator'] = langDict['role_operator'];
+                roleLabels['supervisor'] = langDict['role_supervisor'];
+                roleLabels['admin'] = langDict['role_admin'];
+                roleLabels['quality'] = langDict['role_quality'];
+                
+                try {
+                    renderEmployeesTable();
+                    renderArchiveTable();
+                } catch(e) {}
+            }
+        }
+
+        function closeAddEmployeeModal() {
+            document.getElementById('addEmployeeModal').style.display = 'none';
+            document.getElementById('addEmployeeForm').reset();
+        }
+
+        function submitEmployee(e) {
+            e.preventDefault();
+            
+            const empId = document.getElementById('empId').value;
+            const empName = document.getElementById('empName').value;
+            const empRole = document.getElementById('empRole').value;
+            const empPassword = document.getElementById('empPassword').value;
+
+            if (editingEmployeeId) {
+                // Edit existing
+                const index = employeesData.findIndex(e => e.id === editingEmployeeId);
+                if (index !== -1) {
+                    employeesData[index] = { id: empId, name: empName, role: empRole, password: empPassword };
+                }
+                alert(window.translations[currentLang]['alert_emp_updated'] || 'تم تحديث بيانات الموظف بنجاح!');
+            } else {
+                // Add new
+                if (employeesData.some(emp => emp.id === empId) || archivedEmployeesData.some(emp => emp.id === empId)) {
+                    alert(window.translations[currentLang]['alert_emp_exists'] || 'الرقم الوظيفي موجود مسبقاً!');
+                    return;
+                }
+                employeesData.unshift({ id: empId, name: empName, role: empRole, password: empPassword });
+                alert(window.translations[currentLang]['alert_emp_added'] || 'تم إضافة الموظف بنجاح!');
+            }
+            
+            closeAddEmployeeModal();
+            renderEmployeesTable();
+        }
+
+        function updateRole(empId, newRole) {
+            const index = employeesData.findIndex(e => e.id === empId);
+            if (index !== -1) {
+                employeesData[index].role = newRole;
+            }
+        }
+
+        function deleteEmployee(empId) {
+            const msg = window.translations[currentLang]['alert_emp_delete'] || 'هل أنت متأكد من حذف هذا الموظف ونقله للأرشيف؟';
+            if (confirm(msg)) {
+                const index = employeesData.findIndex(e => e.id === empId);
+                if (index !== -1) {
+                    const deletedEmp = employeesData.splice(index, 1)[0];
+                    deletedEmp.deletedAt = new Date().toLocaleDateString('ar-SA');
+                    archivedEmployeesData.push(deletedEmp);
+                    renderEmployeesTable();
+                    renderArchiveTable();
+                }
+            }
+        }
+        
+        function restoreEmployee(empId) {
+            const msg = window.translations[currentLang]['alert_emp_restore'] || 'هل تريد استعادة هذا الموظف من الأرشيف؟';
+            if (confirm(msg)) {
+                const index = archivedEmployeesData.findIndex(e => e.id === empId);
+                if (index !== -1) {
+                    const restoredEmp = archivedEmployeesData.splice(index, 1)[0];
+                    delete restoredEmp.deletedAt;
+                    employeesData.push(restoredEmp);
+                    renderEmployeesTable();
+                    renderArchiveTable();
+                }
+            }
+        }
+
+        function renderEmployeesTable() {
+            const tbody = document.querySelector('#employeesTable tbody');
+            tbody.innerHTML = '';
+            
+            if (employeesData.length === 0) {
+                tbody.innerHTML = '<tr id="empty-users-row"><td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">لا يوجد موظفين مضافين حالياً.</td></tr>';
+                return;
+            }
+            
+            employeesData.forEach(emp => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: bold;">${emp.id}</td>
+                    <td>${emp.name}</td>
+                    <td>
+                        <select onchange="updateRole('${emp.id}', this.value)" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-family: 'Cairo', sans-serif; font-size: 0.85rem; background-color: #f8fafc; color: #334155; cursor: pointer;">
+                            <option value="operator" ${emp.role === 'operator' ? 'selected' : ''}>${roleLabels['operator']}</option>
+                            <option value="supervisor" ${emp.role === 'supervisor' ? 'selected' : ''}>${roleLabels['supervisor']}</option>
+                            <option value="admin" ${emp.role === 'admin' ? 'selected' : ''}>${roleLabels['admin']}</option>
+                            <option value="quality" ${emp.role === 'quality' ? 'selected' : ''}>${roleLabels['quality']}</option>
+                        </select>
+                    </td>
+                    <td>${'*'.repeat(emp.password.length)}</td>
+                    <td>
+                        <button class="btn secondary small-btn" style="color: #1e40af; border-color: #1e40af; margin-left: 5px;" onclick="openAddEmployeeModal(true, '${emp.id}')"><i class="fas fa-edit"></i> تعديل</button>
+                        <button class="btn secondary small-btn" style="color: #ef4444; border-color: #ef4444;" onclick="deleteEmployee('${emp.id}')"><i class="fas fa-trash-alt"></i> حذف</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderArchiveTable() {
+            const tbody = document.querySelector('#archivedEmployeesTable tbody');
+            tbody.innerHTML = '';
+            
+            if (archivedEmployeesData.length === 0) {
+                tbody.innerHTML = '<tr id="empty-archive-row"><td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">الأرشيف فارغ.</td></tr>';
+                return;
+            }
+            
+            archivedEmployeesData.forEach(emp => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: bold; color: #94a3b8;">${emp.id}</td>
+                    <td style="color: #94a3b8;">${emp.name}</td>
+                    <td><span style="background-color: #f1f5f9; color: #64748b; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">${roleLabels[emp.role]}</span></td>
+                    <td style="color: #ef4444;">${emp.deletedAt}</td>
+                    <td>
+                        <button class="btn secondary small-btn" style="color: #10b981; border-color: #10b981;" onclick="restoreEmployee('${emp.id}')"><i class="fas fa-undo"></i> استعادة</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        let isArchiveView = false;
+        function toggleArchiveView() {
+            isArchiveView = !isArchiveView;
+            const activeView = document.getElementById('active-users-view');
+            const archiveView = document.getElementById('archive-users-view');
+            const title = document.getElementById('users-page-title');
+            const btn = document.getElementById('archiveBtn');
+            
+            if (isArchiveView) {
+                activeView.style.display = 'none';
+                archiveView.style.display = 'block';
+                title.textContent = 'أرشيف المستخدمين';
+                btn.innerHTML = '<i class="fas fa-users"></i> عودة للموظفين';
+                btn.style.backgroundColor = '#ef4444';
+                btn.style.color = '#fff';
+            } else {
+                activeView.style.display = 'block';
+                archiveView.style.display = 'none';
+                title.textContent = 'إدارة المستخدمين';
+                btn.innerHTML = '<i class="fas fa-archive"></i> الأرشيف';
+                btn.style.backgroundColor = '';
+                btn.style.color = '';
+            }
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('addEmployeeModal');
+            if (event.target === modal) {
+                closeAddEmployeeModal();
+            }
+        }
+
+        function switchProductionLine(id, btn) {
+            const section = document.getElementById('production-line');
+            section.querySelectorAll('.reports-actions .action-btn').forEach(b => {
+                b.style.backgroundColor = '';
+                b.style.color = '';
+            });
+            if (btn) {
+                btn.style.backgroundColor = '#1e40af';
+                btn.style.color = '#fff';
+            }
+            
+            section.querySelectorAll('.pl-content').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            const target = document.getElementById('pl-' + id);
+            if (target) {
+                target.style.display = 'block';
+            }
+        }
+
+        const menuItems = document.querySelectorAll('#sidebar-menu li');
+        const sections = document.querySelectorAll('.content-section');
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => showSection(item.getAttribute('data-target')));
+        });
+
+        // Overview Chart with dynamic fetching
+        const ctx = document.getElementById('mainProductionChart').getContext('2d');
+        let mainProductionChart = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: [], datasets: [] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { font: { family: 'Cairo' } } } } }
+        });
+
+        async function fetchAndUpdateChart(period) {
+            try {
+                const response = await fetch('/api/production-chart?period=' + period);
+                const data = await response.json();
+                mainProductionChart.data = data;
+                mainProductionChart.update();
+            } catch (err) {
+                console.error("Failed to fetch chart data:", err);
+            }
+        }
+
+        // Initialize with weekly data
+        fetchAndUpdateChart('weekly');
+
+        // Handle toggles
+        const btnDaily = document.getElementById('btnDailyChart');
+        const btnWeekly = document.getElementById('btnWeeklyChart');
+        
+        btnDaily.addEventListener('click', () => {
+            btnDaily.classList.add('active');
+            btnDaily.style.background = '#1e40af';
+            btnDaily.style.color = '#fff';
+            
+            btnWeekly.classList.remove('active');
+            btnWeekly.style.background = 'none';
+            btnWeekly.style.color = '#64748b';
+            
+            fetchAndUpdateChart('daily');
+        });
+
+        btnWeekly.addEventListener('click', () => {
+            btnWeekly.classList.add('active');
+            btnWeekly.style.background = '#1e40af';
+            btnWeekly.style.color = '#fff';
+            
+            btnDaily.classList.remove('active');
+            btnDaily.style.background = 'none';
+            btnDaily.style.color = '#64748b';
+            
+            fetchAndUpdateChart('weekly');
+        });
+
+        // Reports Charts
+        let reportsChartsRendered = false;
+        function renderReportsCharts() {
+            if (reportsChartsRendered) return;
+            
+            // Daily Production (Bar)
+            const dailyCtx = document.getElementById('dailyProductionChart').getContext('2d');
+            new Chart(dailyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
+                    datasets: [{
+                        label: 'الإنتاج',
+                        data: [221, 291, 261, 99, 174, 0, 0],
+                        backgroundColor: '#1e40af',
+                        borderRadius: 5,
+                        barThickness: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: {rtl: true, titleFont: {family: 'Cairo'}, bodyFont: {family: 'Cairo'}} },
+                    scales: {
+                        y: { display: false },
+                        x: { grid: { display: false }, ticks: { font: { family: 'Cairo' }, color: '#64748b' } }
+                    }
+                }
+            });
+
+            // Monthly Production (Bar)
+            const monthlyCtx = document.getElementById('monthlyProductionChart').getContext('2d');
+            new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
+                    datasets: [{
+                        label: 'الإنتاج الشهري',
+                        data: [18.2, 19.5, 18.8, 12.2, 13.5, 15.1, 19.8, 18.5, 11.8, 19.2, 18.2, 19.2],
+                        backgroundColor: '#1e40af',
+                        borderRadius: 5,
+                        barThickness: 12
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: {rtl: true, titleFont: {family: 'Cairo'}, bodyFont: {family: 'Cairo'}} },
+                    scales: {
+                        y: { display: false },
+                        x: { grid: { display: false }, ticks: { font: { family: 'Cairo', size: 11 }, color: '#64748b' } }
+                    }
+                }
+            });
+
+            // Meter Types (Doughnut)
+            const typesCtx = document.getElementById('meterTypesChart').getContext('2d');
+            new Chart(typesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['الربع الأول', 'الربع الثاني', 'الربع الثالث', 'الربع الرابع'],
+                    datasets: [{
+                        data: [65, 25, 10, 0],
+                        backgroundColor: ['#1e40af', '#10b981', '#f59e0b', '#64748b'],
+                        borderWidth: 0,
+                        cutout: '75%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: {rtl: true, titleFont: {family: 'Cairo'}, bodyFont: {family: 'Cairo'}} }
+                }
+            });
+
+            reportsChartsRendered = true;
+        }
+
+        // Shift Toggles
+        document.querySelectorAll('.shift-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.parentElement.querySelectorAll('.shift-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Render tables on initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderEmployeesTable();
+            renderArchiveTable();
+        });
+    </script>
+</body>
+</html>
