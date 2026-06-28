@@ -1380,9 +1380,16 @@
                     
                     let headerRowIndex = -1;
                     for(let i=0; i<rows.length; i++) {
-                        if (rows[i] && rows[i][0] && typeof rows[i][0] === 'string' && rows[i][0].includes('Test Bench')) {
-                            headerRowIndex = i;
-                            break;
+                        if (rows[i]) {
+                            // Search all columns in the row for "test bench"
+                            for(let j=0; j<rows[i].length; j++) {
+                                const cellValue = rows[i][j];
+                                if (typeof cellValue === 'string' && cellValue.toLowerCase().includes('test bench')) {
+                                    headerRowIndex = i;
+                                    break;
+                                }
+                            }
+                            if (headerRowIndex !== -1) break;
                         }
                     }
                     
