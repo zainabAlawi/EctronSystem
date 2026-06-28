@@ -126,7 +126,10 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <header class="top-nav" style="justify-content: flex-end;">
+            <header class="top-nav" style="justify-content: space-between; align-items: center;">
+                <div class="nav-title">
+                    <h2 id="global-page-title" style="margin: 0; color: #1e293b; font-size: 1.25rem; font-weight: 700;">لوحة القيادة</h2>
+                </div>
                 <div class="nav-left">
                     <div class="profile">
                         <img src="https://i.pravatar.cc/150?u=ahmed" alt="User">
@@ -263,13 +266,13 @@
             <section id="reports" class="content-section">
                 <div class="reports-header-area">
                     <div class="reports-title-box">
-                        <h1 data-i18n="menu_reports" data-i18n="reports_title">التقارير الشهرية</h1>
+                        <h1 id="dynamic-report-title" style="color: #1e40af; font-size: 1.5rem; margin-bottom: 0.5rem;">الرجاء اختيار خط الإنتاج</h1>
                         <p data-i18n="reports_desc">نظرة شاملة على أداء خطوط الإنتاج والتقييم - أكتوبر ٢٠٢٣</p>
                     </div>
                     <div class="reports-actions">
-                        <button class="btn secondary action-btn" onclick="showWMContent(this)"><i class="fas fa-sync"></i> خط إنتاج عدادات المياه الذكية Siconia</button>
-                        <button class="btn secondary action-btn" onclick="showReportsPlaceholder(this)"><i class="fas fa-bolt"></i> خط انتاج عدادات الكهرباء الذكية ECS1100</button>
-                        <button class="btn secondary action-btn" onclick="showSection('reports'); setReportContext('خط إنتاج عدادات الكهرباء الذكية MT212', this)"><i class="fas fa-plug"></i> خط إنتاج عدادات الكهرباء الذكية MT212</button>
+                        <button class="btn secondary action-btn" onclick="showWMContent(this); updateReportTitle(this)"><i class="fas fa-sync"></i> خط إنتاج عدادات المياه الذكية Siconia</button>
+                        <button class="btn secondary action-btn" onclick="showReportsPlaceholder(this); updateReportTitle(this)"><i class="fas fa-bolt"></i> خط انتاج عدادات الكهرباء الذكية ECS1100</button>
+                        <button class="btn secondary action-btn" onclick="showSection('reports'); setReportContext('خط إنتاج عدادات الكهرباء الذكية MT212', this); updateReportTitle(this)"><i class="fas fa-plug"></i> خط إنتاج عدادات الكهرباء الذكية MT212</button>
                     </div>
                 </div>
 
@@ -736,6 +739,14 @@
     </div>
 
     <script>
+        function updateReportTitle(btn) {
+            if(!btn) return;
+            const dynamicTitle = document.getElementById('dynamic-report-title');
+            if(dynamicTitle) {
+                dynamicTitle.textContent = btn.textContent.trim();
+            }
+        }
+
         function showSection(id) {
             sections.forEach(s => s.classList.remove('active'));
             const target = document.getElementById(id);
@@ -743,7 +754,11 @@
             
             menuItems.forEach(item => {
                 item.classList.remove('active');
-                if (item.getAttribute('data-target') === id) item.classList.add('active');
+                if (item.getAttribute('data-target') === id) {
+                    item.classList.add('active');
+                    const globalTitle = document.getElementById('global-page-title');
+                    if (globalTitle) globalTitle.textContent = item.textContent.trim();
+                }
             });
 
             if (id === 'reports') renderReportsCharts();
