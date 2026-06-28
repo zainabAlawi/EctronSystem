@@ -571,34 +571,10 @@
                         <p data-i18n="lines_desc">إدارة ومراقبة خطوط الإنتاج المختلفة</p>
                     </div>
                     <div class="reports-actions">
-                        <button class="pl-tab-btn active" onclick="switchProductionLine('mt212', this)">
-                            <i class="fas fa-bolt pl-tab-icon"></i>
-                            <div class="pl-tab-btn-content">
-                                <span class="pl-tab-title">خط انتاج عدادات الكهرباء</span>
-                                <span class="pl-tab-subtitle">MT212</span>
-                            </div>
-                        </button>
-                        <button class="pl-tab-btn" onclick="switchProductionLine('ecs1100', this)">
-                            <i class="fas fa-bolt pl-tab-icon"></i>
-                            <div class="pl-tab-btn-content">
-                                <span class="pl-tab-title">خط انتاج عدادات الكهرباء</span>
-                                <span class="pl-tab-subtitle">ECS1100</span>
-                            </div>
-                        </button>
-                        <button class="pl-tab-btn" onclick="switchProductionLine('siconia', this)">
-                            <i class="fas fa-tint pl-tab-icon"></i>
-                            <div class="pl-tab-btn-content">
-                                <span class="pl-tab-title">خط انتاج عدادات المياه</span>
-                                <span class="pl-tab-subtitle">Siconia</span>
-                            </div>
-                        </button>
-                        <button class="pl-tab-btn" onclick="switchProductionLine('inventory', this)">
-                            <i class="fas fa-box-open pl-tab-icon"></i>
-                            <div class="pl-tab-btn-content">
-                                <span class="pl-tab-title">إدارة العهدة</span>
-                                <span class="pl-tab-subtitle" style="visibility: hidden;">-</span>
-                            </div>
-                        </button>
+                        <button class="btn secondary action-btn" style="background-color: #1e40af; color: #fff;" onclick="switchProductionLine('mt212', this)"><i class="fas fa-bolt"></i data-i18n="line_mt212"> خط انتاج عدادات الكهرباء MT212</button>
+                        <button class="btn secondary action-btn" onclick="switchProductionLine('ecs1100', this)"><i class="fas fa-bolt"></i data-i18n="line_ecs1100"> خط انتاج عدادات الكهرباء ECS1100</button>
+                        <button class="btn secondary action-btn" onclick="switchProductionLine('siconia', this)"><i class="fas fa-tint"></i data-i18n="line_siconia"> خط انتاج عدادات المياه Siconia</button>
+                        <button class="btn secondary action-btn" onclick="switchProductionLine('inventory', this)"><i class="fas fa-box-open"></i data-i18n="line_inventory"> إدارة العهدة</button>
                     </div>
                 </div>
                 
@@ -1164,11 +1140,13 @@
 
         function switchProductionLine(id, btn) {
             const section = document.getElementById('production-line');
-            section.querySelectorAll('.reports-actions .pl-tab-btn').forEach(b => {
-                b.classList.remove('active');
+            section.querySelectorAll('.reports-actions .action-btn').forEach(b => {
+                b.style.backgroundColor = '';
+                b.style.color = '';
             });
             if (btn) {
-                btn.classList.add('active');
+                btn.style.backgroundColor = '#1e40af';
+                btn.style.color = '#fff';
             }
             
             section.querySelectorAll('.pl-content').forEach(el => {

@@ -409,48 +409,6 @@ nav ul li:hover, nav ul li.active { background-color: var(--primary-light); colo
 .stages-data-table td { padding: 1rem; font-size: 0.9rem; font-weight: 600; color: var(--text-main); border-bottom: 1px solid var(--border); }
 .stages-data-table tr:last-child td { border-bottom: none; }
 
-/* Custom Production Line Tabs */
-.pl-tab-btn {
-    background-color: var(--white);
-    border: 1px solid #dbeafe;
-    border-radius: 12px;
-    padding: 0.5rem 1rem;
-    color: #1e40af;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: 0.5rem;
-    min-width: 230px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-}
-.pl-tab-btn:hover {
-    border-color: #2563eb;
-}
-.pl-tab-btn.active {
-    background-color: #2563eb;
-    color: var(--white);
-    border-color: #2563eb;
-}
-.pl-tab-btn-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.pl-tab-title {
-    font-size: 0.85rem;
-    font-weight: 700;
-    margin-bottom: 0.15rem;
-}
-.pl-tab-subtitle {
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-.pl-tab-icon {
-    font-size: 1.1rem;
-}
-
 @media (max-width: 1200px) {
     .kpi-row { grid-template-columns: repeat(2, 1fr); }
     .reports-kpi-grid { grid-template-columns: repeat(2, 1fr); }
