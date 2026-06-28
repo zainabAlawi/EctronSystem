@@ -423,30 +423,37 @@
                     </div>
                 </div>
 
+                <div class="card file-upload-card" id="excel-drop-zone" style="margin-bottom: 1.5rem; text-align: center; border: 2px dashed #cbd5e1; padding: 3rem 1rem; border-radius: 10px; cursor: pointer; transition: all 0.3s; background-color: #f8fafc;">
+                    <i class="fas fa-file-excel" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+                    <h3 style="color: #1e293b; margin-bottom: 0.5rem; font-size: 1.25rem;">اسحب وأفلت ملف الإكسل هنا</h3>
+                    <p style="color: #64748b; font-size: 0.9rem;">أو انقر لاختيار ملف من جهازك بصيغة (XLSX, XLS)</p>
+                    <input type="file" id="excel-file-input" accept=".xlsx, .xls" style="display: none;">
+                </div>
+
                 <div class="card stages-data-card">
                     <div class="card-header">
-                        <h3><i class="fas fa-chart-line"></i> بيانات مراحل الإنتاج</h3>
+                        <h3><i class="fas fa-chart-line"></i> معاينة بيانات الإكسل لمراحل الإنتاج</h3>
                     </div>
                     <div class="stages-table-container">
-                        <table class="stages-input-table">
+                        <table class="stages-input-table" id="mt212-preview-table">
                             <thead>
                                 <tr>
-                                    <th>المرحلة</th>
-                                    <th>الإنتاج الفعلي</th>
-                                    <th>الانتظار</th>
-                                    <th>الأخطاء</th>
-                                    <th>ملاحظات</th>
+                                    <th>المرحلة (Stage)</th>
+                                    <th>عدد اللوحات (Nb board)</th>
+                                    <th>سليمة من المرة الأولى (OK 1st pass)</th>
+                                    <th>بدون إعادة عمل (Xpass not rewor)</th>
+                                    <th>معدل النجاح (FPY)</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><td>التجميع (Assembly)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
-                                <tr><td>العزل (Insolation)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
-                                <tr><td>تردد الإشعاع (RF)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
-                                <tr><td>المعايرة (Calibration)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
-                                <tr><td>الاختبار المتعدد (Multi-test)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
-                                <tr><td>القياس (Metrology)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
-                                <tr><td>الجودة (Quality)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
-                                <tr><td>فتحة البطاقة (Card Slot)</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="text" placeholder="أضف ملاحظة..."></td></tr>
+                                <tr data-stage="SFIN MT212 OMAN"><td>SFIN MT212 OMAN</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="TEST RAYONNE RF"><td>TEST RAYONNE RF</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Insulation"><td>Insulation</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Metrology Lab"><td>Metrology Lab</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="CAL2"><td>CAL2</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Multi-TEST"><td>Multi-TEST</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Assembly"><td>Assembly</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Perso"><td>Perso</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -456,9 +463,9 @@
                     <div class="confirmation-content">
                         <div class="confirmation-text">
                             <h3><i class="fas fa-check-circle"></i> تأكيد البيانات النهائية</h3>
-                            <p>يرجى التأكد من دقة الأرقام المدخلة قبل الحفظ. سيتم إرسال هذا التقرير تلقائياً إلى إدارة مراقبة الجودة والإنتاج فور الحفظ.</p>
+                            <p>يرجى التأكد من أن الأرقام أعلاه مطابقة للإكسل المرفق قبل الحفظ.</p>
                         </div>
-                        <button class="btn primary dark large-save"><i class="fas fa-save"></i> حفظ التقرير</button>
+                        <button class="btn primary dark large-save" onclick="saveExcelReport()"><i class="fas fa-save"></i> حفظ التقرير</button>
                     </div>
                 </div>
 
@@ -1315,6 +1322,164 @@
             renderEmployeesTable();
             renderArchiveTable();
         });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // Drag and Drop Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropZone = document.getElementById('excel-drop-zone');
+            const fileInput = document.getElementById('excel-file-input');
+
+            if (dropZone && fileInput) {
+                dropZone.addEventListener('click', () => fileInput.click());
+
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropZone.style.borderColor = '#1e40af';
+                    dropZone.style.backgroundColor = '#e2e8f0';
+                });
+
+                dropZone.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    dropZone.style.borderColor = '#cbd5e1';
+                    dropZone.style.backgroundColor = '#f8fafc';
+                });
+
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.style.borderColor = '#cbd5e1';
+                    dropZone.style.backgroundColor = '#f8fafc';
+                    
+                    if (e.dataTransfer.files.length) {
+                        fileInput.files = e.dataTransfer.files;
+                        handleExcelFile(e.dataTransfer.files[0]);
+                    }
+                });
+
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length) {
+                        handleExcelFile(e.target.files[0]);
+                    }
+                });
+            }
+        });
+
+        let extractedExcelData = [];
+
+        function handleExcelFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    const rows = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                    
+                    let headerRowIndex = -1;
+                    for(let i=0; i<rows.length; i++) {
+                        if (rows[i] && rows[i][0] && typeof rows[i][0] === 'string' && rows[i][0].includes('Test Bench')) {
+                            headerRowIndex = i;
+                            break;
+                        }
+                    }
+                    
+                    if (headerRowIndex !== -1) {
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { range: headerRowIndex });
+                        extractedExcelData = jsonData;
+                        populatePreviewTable(jsonData);
+                    } else {
+                        alert('لم يتم العثور على ترويسة الأعمدة الصحيحة في ملف الإكسل (Test Bench / Product Name).');
+                    }
+                } catch (error) {
+                    alert('حدث خطأ أثناء قراءة الملف، تأكد من أنه ملف إكسل صالح.');
+                    console.error(error);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function populatePreviewTable(data) {
+            const tbody = document.querySelector('#mt212-preview-table tbody');
+            if(!tbody) return;
+            const rows = tbody.querySelectorAll('tr');
+            
+            let matchedCount = 0;
+            rows.forEach(tr => {
+                const stageKey = tr.getAttribute('data-stage');
+                const matchedRow = data.find(r => r['Test Bench / Product Name'] && r['Test Bench / Product Name'].includes(stageKey));
+                
+                if (matchedRow) {
+                    tr.querySelector('.nb-board').textContent = matchedRow['Nb board'] || '0';
+                    tr.querySelector('.ok-1st-pass').textContent = matchedRow['Nb B. OK 1st pass'] || '0';
+                    tr.querySelector('.xpass-not-rewor').textContent = matchedRow['Nb B. OK Xpass not rewor'] || '0';
+                    tr.querySelector('.fpy').textContent = (matchedRow['FPY'] !== undefined) ? (typeof matchedRow['FPY'] === 'number' ? (matchedRow['FPY'] * 100).toFixed(2) + '%' : matchedRow['FPY']) : '0';
+                    tr.style.backgroundColor = '#ecfdf5';
+                    matchedCount++;
+                } else {
+                    tr.style.backgroundColor = '';
+                }
+            });
+            if (matchedCount > 0) {
+                alert('تمت قراءة البيانات وتعبئة الجدول بنجاح. راجع الأرقام ثم اضغط حفظ التقرير.');
+            } else {
+                alert('لم يتم العثور على أي تطابق لمراحل الإنتاج في الملف.');
+            }
+        }
+        
+        async function saveExcelReport() {
+            if (!extractedExcelData || extractedExcelData.length === 0) {
+                alert('يرجى سحب وإفلات ملف الإكسل أولاً.');
+                return;
+            }
+
+            try {
+                // Get date, fallback to empty string if not found
+                const dateInput = document.querySelector('.add-report-form input[type="date"]');
+                const reportDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+
+                // Change button text to show loading state
+                const saveBtn = document.querySelector('.large-save');
+                const originalText = saveBtn.innerHTML;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+                saveBtn.disabled = true;
+
+                const response = await fetch('/api/upload-mt212-report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        report_date: reportDate,
+                        records: extractedExcelData
+                    })
+                });
+
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+
+                if (response.ok) {
+                    alert('تم الحفظ في قاعدة البيانات بنجاح!');
+                    showSection('reports');
+                    // Reset UI
+                    extractedExcelData = [];
+                    const rows = document.querySelectorAll('#mt212-preview-table tbody tr');
+                    rows.forEach(tr => {
+                        tr.style.backgroundColor = '';
+                        tr.querySelectorAll('td:not(:first-child)').forEach(td => td.textContent = '-');
+                    });
+                } else {
+                    const err = await response.json();
+                    alert('حدث خطأ أثناء الحفظ: ' + err.message);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('حدث خطأ في الاتصال بالخادم.');
+                const saveBtn = document.querySelector('.large-save');
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> حفظ التقرير';
+                saveBtn.disabled = false;
+            }
+        }
     </script>
 </body>
 </html>
