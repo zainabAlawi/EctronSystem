@@ -276,8 +276,7 @@
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h2 id="report-context-title" style="display: none; color: #1e40af; font-size: 1.2rem; font-weight: bold; margin: 0;"></h2>
+                <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1rem;">
                     <button class="btn primary add-report-btn" onclick="showSection('add-report')"><i class="fas fa-plus"></i data-i18n="btn_add_report"> إضافة تقرير</button>
                 </div>
                 <div class="reports-kpi-grid">
@@ -781,11 +780,7 @@
                 btn.style.color = '#fff';
             }
 
-            const titleEl = document.getElementById('report-context-title');
-            if (titleEl) {
-                titleEl.textContent = title;
-                titleEl.style.display = 'block';
-            }
+            // Title is now updated dynamically via updateReportTitle
         }
 
         function showReportsPlaceholder(btn) {
@@ -839,8 +834,7 @@
                 placeholder.className = 'custom-placeholder';
                 placeholder.style.cssText = 'padding: 2rem;';
                 placeholder.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                        <h2 style="color: #1e40af; font-size: 1.5rem; font-weight: bold; margin: 0;"><i class="fas fa-tint"></i> Smart Water Meter</h2>
+                    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1.5rem;">
                         <button class="btn primary add-report-btn" onclick="showSection('add-report-wm')"><i class="fas fa-plus"></i data-i18n="btn_add_report"> إضافة تقرير</button>
                     </div>
                     
