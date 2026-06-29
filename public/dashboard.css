@@ -422,3 +422,8 @@ nav ul li:hover, nav ul li.active { background-color: var(--primary-light); colo
     .reports-kpi-grid { grid-template-columns: 1fr; }
     .reports-actions { flex-wrap: wrap; }
 }
+.stages-table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}

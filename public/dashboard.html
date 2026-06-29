@@ -270,13 +270,13 @@
 
                     </div>
                     <div class="reports-actions">
-                        <button class="btn secondary action-btn" onclick="showWMContent(this); updateReportTitle(this)"><i class="fas fa-sync"></i> خط إنتاج عدادات المياه الذكية Siconia</button>
+                        <button id="mt212-btn" class="btn secondary action-btn" onclick="showSection('reports'); setReportContext('خط إنتاج عدادات الكهرباء الذكية MT212', this); updateReportTitle(this)"><i class="fas fa-plug"></i> خط إنتاج عدادات الكهرباء الذكية MT212</button>
                         <button class="btn secondary action-btn" onclick="showReportsPlaceholder(this); updateReportTitle(this)"><i class="fas fa-bolt"></i> خط انتاج عدادات الكهرباء الذكية ECS1100</button>
-                        <button class="btn secondary action-btn" onclick="showSection('reports'); setReportContext('خط إنتاج عدادات الكهرباء الذكية MT212', this); updateReportTitle(this)"><i class="fas fa-plug"></i> خط إنتاج عدادات الكهرباء الذكية MT212</button>
+                        <button class="btn secondary action-btn" onclick="showWMContent(this); updateReportTitle(this)"><i class="fas fa-sync"></i> خط إنتاج عدادات المياه الذكية Siconia</button>
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 1rem;">
                     <button class="btn primary add-report-btn" onclick="showSection('add-report')"><i class="fas fa-plus"></i data-i18n="btn_add_report"> إضافة تقرير</button>
                 </div>
                 <div class="reports-kpi-grid">
@@ -340,37 +340,94 @@
                     </div>
                 </div>
 
-                <div class="card data-table-card">
-                    <div class="table-header-flex">
-                        <div class="title-col">
+                    <div class="table-header-flex" style="justify-content: space-between;">
+                        <div class="title-col" style="display: flex; align-items: center; gap: 1rem;">
                             <h3>جدول الإنتاج اليومي</h3>
-                            <span>يوم الأحد، ١٠ مايو ٢٠٢٦</span>
+                            <input type="date" id="dashboard-date-picker" class="input-field" style="padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit;">
+                            <span id="dashboard-day-display" style="font-weight: bold; color: #1e40af;"></span>
+                            <button class="btn secondary action-btn" onclick="editDashboardReport()" title="تعديل" style="padding: 0.5rem; margin-right: 1rem;"><i class="fas fa-edit"></i></button>
+                            <button class="btn danger action-btn" onclick="deleteDashboardReport()" title="حذف للأرشيف" style="padding: 0.5rem; color: #ef4444; border-color: #ef4444;"><i class="fas fa-trash"></i></button>
                         </div>
-                        <button class="btn secondary small-btn">قيد التحديث</button>
+                        <button class="btn secondary" id="reportsArchiveBtn" onclick="toggleReportsArchive()"><i class="fas fa-archive"></i> أرشيف التقارير</button>
                     </div>
                     <div class="stages-table-container">
-                        <table class="stages-data-table">
+                        <table class="stages-input-table" id="dashboard-daily-table">
                             <thead>
                                 <tr>
-                                    <th>المرحلة</th>
-                                    <th>المستهدف</th>
-                                    <th>الفعلي</th>
-                                    <th>الأخطاء</th>
-                                    <th>الانتظار</th>
-                                    <th>ملاحظات</th>
+                                    <th>المرحلة (Stage)</th>
+                                    <th>الوردية الصباحية (العدادات الناجحة)</th>
+                                    <th>الوردية المسائية (العدادات الناجحة)</th>
+                                    <th>المجموع (العدادات الناجحة)</th>
+                                    <th>عدد اللوحات (Nb board)</th>
+                                    <th>سليمة من المرة الأولى (OK 1st pass)</th>
+                                    <th>بدون إعادة عمل (Xpass not rewor)</th>
+                                    <th>معدل النجاح الإجمالي (Total FPY)</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><td>التجميع (Assembly)</td><td>٤٠٠</td><td class="text-blue">٣١٤</td><td>-</td><td>-</td><td>-</td></tr>
-                                <tr><td>العزل (Insolation)</td><td>٤٠٠</td><td class="text-blue">٣٩٣</td><td>-</td><td>-</td><td>-</td></tr>
-                                <tr><td>تردد الإشعاع (Radiation Frequency)</td><td>٤٠٠</td><td class="text-blue">٣٤٠</td><td>-</td><td>-</td><td>-</td></tr>
-                                <tr><td>المعايرة (Calibration)</td><td>٤٠٠</td><td class="text-blue">٣١٦</td><td>-</td><td>-</td><td>-</td></tr>
-                                <tr><td>الاختبار المتعدد (Multi test)</td><td>٤٠٠</td><td class="text-blue">٢٧٦</td><td>-</td><td>-</td><td>-</td></tr>
-                                <tr><td>المقاييس (Metrology)</td><td>٤٠٠</td><td class="text-blue">٢٧٦</td><td>-</td><td>-</td><td>-</td></tr>
-                                <tr><td>الجودة (Quality)</td><td>٤٠٠</td><td class="text-blue">٢٢٢</td><td>-</td><td>-</td><td>-</td></tr>
-                                <tr><td>منفذ البطاقة (Card Slot)</td><td>٤٠٠</td><td class="text-blue">٣١٤</td><td>-</td><td>-</td><td>-</td></tr>
+                                <tr data-stage="SFIN MT212 OMAN"><td>SFIN MT212 OMAN</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="TEST RAYONNE RF"><td>TEST RAYONNE RF</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Insulation"><td>Insulation</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Metrology Lab"><td>Metrology Lab</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="CAL2"><td>CAL2</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Multi-TEST"><td>Multi-TEST</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Assembly"><td>Assembly</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Perso"><td>Perso</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </section>
+                
+            <section id="reports-archive-view" class="content-section" style="padding-right: 4rem;">
+                <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div>
+                        <h1 style="color: #1e293b; font-size: 1.6rem; margin: 0;"><i class="fas fa-archive" style="color: #f59e0b; margin-left: 10px;"></i>أرشيف تقارير MT212</h1>
+                        <p style="color: #64748b; margin-top: 0.2rem; font-size: 0.9rem;">استعراض التقارير المحذوفة وإمكانية استعادتها</p>
+                    </div>
+                    <button class="btn secondary" onclick="showSection('reports')" style="box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><i class="fas fa-arrow-left"></i> رجوع للتقارير</button>
+                </div>
+
+                <div class="card data-table-card" style="border: none; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border-radius: 12px; overflow: hidden;">
+                    <div class="card-header" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; padding: 1.5rem; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <label style="font-weight: 600; color: #334155; font-size: 1.05rem;">اختر التاريخ المؤرشف:</label>
+                            <div style="position: relative;">
+                                <select id="archive-date-select" class="input-field" style="padding: 0.6rem 2.5rem 0.6rem 1rem; min-width: 250px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: inherit; font-size: 1rem; background-color: white; cursor: pointer; appearance: none; transition: border-color 0.2s;" onchange="fetchArchivedReportPreview(this.value)">
+                                    <option value="">-- لا يوجد تقارير مؤرشفة --</option>
+                                </select>
+                                <i class="fas fa-calendar-alt" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; pointer-events: none;"></i>
+                                <i class="fas fa-chevron-down" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; pointer-events: none; font-size: 0.8rem;"></i>
+                            </div>
+                        </div>
+                        <button class="btn primary" onclick="restoreArchivedReport()" style="background-color: #10b981; border: none; padding: 0.6rem 1.5rem; font-weight: 600; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2); transition: transform 0.1s, box-shadow 0.1s;"><i class="fas fa-undo"></i> استعادة التقرير</button>
+                    </div>
+                    <div class="stages-table-container" style="background: white; width: 100%; overflow-x: auto; box-sizing: border-box; display: block;">
+                        <table class="stages-input-table" id="archive-preview-table" style="min-width: 900px;">
+                            <thead>
+                                <tr>
+                                    <th>المرحلة (Stage)</th>
+                                    <th>الوردية الصباحية (العدادات الناجحة)</th>
+                                    <th>الوردية المسائية (العدادات الناجحة)</th>
+                                    <th>المجموع (العدادات الناجحة)</th>
+                                    <th>عدد اللوحات (Nb board)</th>
+                                    <th>سليمة من المرة الأولى (OK 1st pass)</th>
+                                    <th>بدون إعادة عمل (Xpass not rewor)</th>
+                                    <th>معدل النجاح الإجمالي (Total FPY)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-stage="SFIN MT212 OMAN"><td>SFIN MT212 OMAN</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="TEST RAYONNE RF"><td>TEST RAYONNE RF</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Insulation"><td>Insulation</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Metrology Lab"><td>Metrology Lab</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="CAL2"><td>CAL2</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Multi-TEST"><td>Multi-TEST</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Assembly"><td>Assembly</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Perso"><td>Perso</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                     </div>
                 </div>
             </section>
@@ -423,6 +480,11 @@
                     </div>
                 </div>
 
+                <div style="margin-bottom: 1rem; display: flex; justify-content: center; gap: 1.5rem; background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid #cbd5e1;">
+                    <label style="font-weight: bold; color: #334155;">حدد وردية الملف المرفق:</label>
+                    <label style="cursor: pointer;"><input type="radio" name="shift_select" value="morning" checked> الوردية الصباحية</label>
+                    <label style="cursor: pointer;"><input type="radio" name="shift_select" value="evening"> الوردية المسائية</label>
+                </div>
                 <div class="card file-upload-card" id="excel-drop-zone" style="margin-bottom: 1.5rem; text-align: center; border: 2px dashed #cbd5e1; padding: 3rem 1rem; border-radius: 10px; cursor: pointer; transition: all 0.3s; background-color: #f8fafc;">
                     <i class="fas fa-file-excel" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
                     <h3 style="color: #1e293b; margin-bottom: 0.5rem; font-size: 1.25rem;">اسحب وأفلت ملف الإكسل هنا</h3>
@@ -433,27 +495,31 @@
                 <div class="card stages-data-card">
                     <div class="card-header">
                         <h3><i class="fas fa-chart-line"></i> معاينة بيانات الإكسل لمراحل الإنتاج</h3>
+                        <p id="table-date-display" style="text-align: center; font-weight: bold; margin-top: 0.5rem; color: #1e40af;"></p>
                     </div>
                     <div class="stages-table-container">
                         <table class="stages-input-table" id="mt212-preview-table">
                             <thead>
                                 <tr>
                                     <th>المرحلة (Stage)</th>
+                                    <th>الوردية الصباحية (العدادات الناجحة)</th>
+                                    <th>الوردية المسائية (العدادات الناجحة)</th>
+                                    <th>المجموع (العدادات الناجحة)</th>
                                     <th>عدد اللوحات (Nb board)</th>
                                     <th>سليمة من المرة الأولى (OK 1st pass)</th>
                                     <th>بدون إعادة عمل (Xpass not rewor)</th>
-                                    <th>معدل النجاح (FPY)</th>
+                                    <th>معدل النجاح الإجمالي (Total FPY)</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr data-stage="SFIN MT212 OMAN"><td>SFIN MT212 OMAN</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
-                                <tr data-stage="TEST RAYONNE RF"><td>TEST RAYONNE RF</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
-                                <tr data-stage="Insulation"><td>Insulation</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
-                                <tr data-stage="Metrology Lab"><td>Metrology Lab</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
-                                <tr data-stage="CAL2"><td>CAL2</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
-                                <tr data-stage="Multi-TEST"><td>Multi-TEST</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
-                                <tr data-stage="Assembly"><td>Assembly</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
-                                <tr data-stage="Perso"><td>Perso</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="SFIN MT212 OMAN"><td>SFIN MT212 OMAN</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="TEST RAYONNE RF"><td>TEST RAYONNE RF</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Insulation"><td>Insulation</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Metrology Lab"><td>Metrology Lab</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="CAL2"><td>CAL2</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Multi-TEST"><td>Multi-TEST</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Assembly"><td>Assembly</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
+                                <tr data-stage="Perso"><td>Perso</td><td class="morning-ok">-</td><td class="evening-ok">-</td><td class="total-ok-shift">-</td><td class="nb-board">-</td><td class="ok-1st-pass">-</td><td class="xpass-not-rewor">-</td><td class="fpy">-</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -767,7 +833,14 @@
                 }
             });
 
-            if (id === 'reports') renderReportsCharts();
+            if (id === 'reports') {
+                renderReportsCharts();
+                const mt212Btn = document.getElementById('mt212-btn');
+                if (mt212Btn) {
+                    setReportContext('خط إنتاج عدادات الكهرباء الذكية MT212', mt212Btn);
+                    updateReportTitle(mt212Btn);
+                }
+            }
         }
 
         function setReportContext(title, btn) {
@@ -841,7 +914,7 @@
                 placeholder.className = 'custom-placeholder';
                 placeholder.style.cssText = 'padding: 2rem;';
                 placeholder.innerHTML = `
-                    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 1.5rem;">
                         <button class="btn primary add-report-btn" onclick="showSection('add-report-wm')"><i class="fas fa-plus"></i data-i18n="btn_add_report"> إضافة تقرير</button>
                     </div>
                     
@@ -1364,7 +1437,316 @@
             }
         });
 
-        let extractedExcelData = [];
+        let extractedExcelData = {
+            morning: null,
+            evening: null
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.querySelector('.add-report-form input[type="date"]');
+            if (dateInput) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+                updateDayInput(dateInput.value);
+                fetchExistingData(dateInput.value);
+
+                dateInput.addEventListener('change', (e) => {
+                    updateDayInput(e.target.value);
+                    fetchExistingData(e.target.value);
+                });
+            }
+
+            const dashboardDateInput = document.getElementById('dashboard-date-picker');
+            if (dashboardDateInput) {
+                const todayStr = new Date().toISOString().split('T')[0];
+                dashboardDateInput.value = todayStr;
+                updateDashboardDayDisplay(todayStr);
+                fetchDashboardData(todayStr);
+
+                dashboardDateInput.addEventListener('change', (e) => {
+                    updateDashboardDayDisplay(e.target.value);
+                    fetchDashboardData(e.target.value);
+                });
+            }
+        });
+
+        function updateDashboardDayDisplay(dateStr) {
+            const dayDisplay = document.getElementById('dashboard-day-display');
+            if (dayDisplay && dateStr) {
+                const dateObj = new Date(dateStr);
+                const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                dayDisplay.textContent = days[dateObj.getDay()];
+            }
+        }
+
+        async function fetchDashboardData(dateStr) {
+            try {
+                const response = await fetch(`/api/reports/mt212?date=${dateStr}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    populateDashboardTable(data);
+                } else {
+                    populateDashboardTable({ morning: null, evening: null });
+                }
+            } catch (err) {
+                console.error('Error fetching dashboard data:', err);
+                populateDashboardTable({ morning: null, evening: null });
+            }
+        }
+
+        function populateDashboardTable(data) {
+            const tbody = document.querySelector('#dashboard-daily-table tbody');
+            if(!tbody) return;
+            const rows = tbody.querySelectorAll('tr');
+            
+            rows.forEach(tr => {
+                const stageKey = tr.getAttribute('data-stage');
+                
+                const morningRow = data.morning ? data.morning.find(r => r['Test Bench / Product Name'] && r['Test Bench / Product Name'].includes(stageKey)) : null;
+                const eveningRow = data.evening ? data.evening.find(r => r['Test Bench / Product Name'] && r['Test Bench / Product Name'].includes(stageKey)) : null;
+                
+                if (morningRow || eveningRow) {
+                    const mFPY = morningRow && morningRow['FPY'] !== undefined ? morningRow['FPY'] : null;
+                    const eFPY = eveningRow && eveningRow['FPY'] !== undefined ? eveningRow['FPY'] : null;
+                    
+                    const mNb = morningRow ? (parseFloat(morningRow['Nb board']) || 0) : 0;
+                    const eNb = eveningRow ? (parseFloat(eveningRow['Nb board']) || 0) : 0;
+                    const totalNb = mNb + eNb;
+                    tr.querySelector('.nb-board').textContent = totalNb;
+                    
+                    const mOk = morningRow ? (parseFloat(morningRow['Nb B. OK 1st pass']) || 0) : 0;
+                    const eOk = eveningRow ? (parseFloat(eveningRow['Nb B. OK 1st pass']) || 0) : 0;
+                    const totalOk = mOk + eOk;
+                    tr.querySelector('.ok-1st-pass').textContent = totalOk;
+                    
+                    tr.querySelector('.morning-ok').textContent = mOk;
+                    tr.querySelector('.evening-ok').textContent = eOk;
+                    tr.querySelector('.total-ok-shift').textContent = totalOk;
+                    
+                    const mXpass = morningRow ? (parseFloat(morningRow['Nb B. OK Xpass not rewor']) || 0) : 0;
+                    const eXpass = eveningRow ? (parseFloat(eveningRow['Nb B. OK Xpass not rewor']) || 0) : 0;
+                    const totalXpass = mXpass + eXpass;
+                    tr.querySelector('.xpass-not-rewor').textContent = totalXpass;
+                    
+                    let totalFpyVal = '-';
+                    if (totalNb > 0) {
+                        totalFpyVal = ((totalOk / totalNb) * 100).toFixed(2) + '%';
+                    } else if (mFPY !== null && eFPY === null) {
+                        totalFpyVal = typeof mFPY === 'number' ? (mFPY * 100).toFixed(2) + '%' : mFPY;
+                    } else if (eFPY !== null && mFPY === null) {
+                        totalFpyVal = typeof eFPY === 'number' ? (eFPY * 100).toFixed(2) + '%' : eFPY;
+                    }
+
+                    tr.querySelector('.fpy').textContent = totalFpyVal;
+                } else {
+                    tr.querySelector('.nb-board').textContent = '-';
+                    tr.querySelector('.ok-1st-pass').textContent = '-';
+                    tr.querySelector('.morning-ok').textContent = '-';
+                    tr.querySelector('.evening-ok').textContent = '-';
+                    tr.querySelector('.total-ok-shift').textContent = '-';
+                    tr.querySelector('.xpass-not-rewor').textContent = '-';
+                    tr.querySelector('.fpy').textContent = '-';
+                }
+            });
+        }
+        
+        function editDashboardReport() {
+            const dateInput = document.getElementById('dashboard-date-picker');
+            if (dateInput && dateInput.value) {
+                showSection('add-report');
+                const addReportDateInput = document.querySelector('.add-report-form input[type="date"]');
+                if (addReportDateInput) {
+                    addReportDateInput.value = dateInput.value;
+                    // Trigger change event to fetch data
+                    addReportDateInput.dispatchEvent(new Event('change'));
+                }
+            }
+        }
+
+        async function deleteDashboardReport() {
+            const dateInput = document.getElementById('dashboard-date-picker');
+            if (dateInput && dateInput.value) {
+                if (confirm('هل أنت متأكد من حذف هذا التقرير ونقله إلى الأرشيف؟')) {
+                    try {
+                        const response = await fetch(`/api/reports/mt212?date=${dateInput.value}`, {
+                            method: 'DELETE'
+                        });
+                        if (response.ok) {
+                            alert('تم النقل للأرشيف بنجاح.');
+                            fetchDashboardData(dateInput.value); // Will clear table
+                            loadArchiveList(); // Refresh archive list
+                        } else {
+                            const err = await response.json();
+                            alert(err.message || 'حدث خطأ أثناء الحذف.');
+                        }
+                    } catch (err) {
+                        console.error('Error deleting report:', err);
+                        alert('حدث خطأ في الاتصال.');
+                    }
+                }
+            }
+        }
+
+        function toggleReportsArchive() {
+            showSection('reports-archive-view');
+            loadArchiveList();
+        }
+
+        let archivedReportsData = {};
+
+        async function loadArchiveList() {
+            try {
+                const response = await fetch('/api/archive/mt212');
+                if (response.ok) {
+                    archivedReportsData = await response.json();
+                    const select = document.getElementById('archive-date-select');
+                    select.innerHTML = '<option value="">-- اختر التاريخ --</option>';
+                    const dates = Object.keys(archivedReportsData).sort((a, b) => new Date(b) - new Date(a));
+                    
+                    if (dates.length === 0) {
+                        select.innerHTML = '<option value="">-- لا يوجد تقارير مؤرشفة --</option>';
+                        populateArchivePreviewTable({ morning: null, evening: null });
+                    } else {
+                        dates.forEach(date => {
+                            const opt = document.createElement('option');
+                            opt.value = date;
+                            opt.textContent = date;
+                            select.appendChild(opt);
+                        });
+                        // Automatically fetch the first one if none selected
+                        if (dates.length > 0) {
+                            select.value = dates[0];
+                            fetchArchivedReportPreview(dates[0]);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading archive list:', err);
+            }
+        }
+
+        function fetchArchivedReportPreview(dateStr) {
+            if (!dateStr || !archivedReportsData[dateStr]) {
+                populateArchivePreviewTable({ morning: null, evening: null });
+                return;
+            }
+            populateArchivePreviewTable(archivedReportsData[dateStr]);
+        }
+        
+        async function restoreArchivedReport() {
+            const select = document.getElementById('archive-date-select');
+            const dateStr = select.value;
+            if (!dateStr) {
+                alert('يرجى تحديد تقرير من الأرشيف لاستعادته.');
+                return;
+            }
+            if (confirm('هل أنت متأكد من استعادة التقرير إلى البيانات الأساسية؟')) {
+                try {
+                    const response = await fetch('/api/archive/restore/mt212', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ date: dateStr })
+                    });
+                    if (response.ok) {
+                        alert('تم استعادة التقرير بنجاح.');
+                        loadArchiveList(); // refresh list
+                        
+                        // Check if dashboard date matches, if so refresh dashboard
+                        const dInput = document.getElementById('dashboard-date-picker');
+                        if (dInput && dInput.value === dateStr) {
+                            fetchDashboardData(dateStr);
+                        }
+                    } else {
+                        const err = await response.json();
+                        alert(err.message || 'حدث خطأ أثناء الاستعادة.');
+                    }
+                } catch (err) {
+                    console.error('Error restoring report:', err);
+                    alert('حدث خطأ في الاتصال.');
+                }
+            }
+        }
+
+        function populateArchivePreviewTable(data) {
+            const tbody = document.querySelector('#archive-preview-table tbody');
+            if(!tbody) return;
+            const rows = tbody.querySelectorAll('tr');
+            
+            rows.forEach(tr => {
+                const stageKey = tr.getAttribute('data-stage');
+                const morningRow = data.morning ? data.morning.find(r => r['Test Bench / Product Name'] && r['Test Bench / Product Name'].includes(stageKey)) : null;
+                const eveningRow = data.evening ? data.evening.find(r => r['Test Bench / Product Name'] && r['Test Bench / Product Name'].includes(stageKey)) : null;
+                
+                if (morningRow || eveningRow) {
+                    const mFPY = morningRow && morningRow['FPY'] !== undefined ? morningRow['FPY'] : null;
+                    const eFPY = eveningRow && eveningRow['FPY'] !== undefined ? eveningRow['FPY'] : null;
+                    
+                    const mNb = morningRow ? (parseFloat(morningRow['Nb board']) || 0) : 0;
+                    const eNb = eveningRow ? (parseFloat(eveningRow['Nb board']) || 0) : 0;
+                    const totalNb = mNb + eNb;
+                    tr.querySelector('.nb-board').textContent = totalNb;
+                    
+                    const mOk = morningRow ? (parseFloat(morningRow['Nb B. OK 1st pass']) || 0) : 0;
+                    const eOk = eveningRow ? (parseFloat(eveningRow['Nb B. OK 1st pass']) || 0) : 0;
+                    const totalOk = mOk + eOk;
+                    tr.querySelector('.ok-1st-pass').textContent = totalOk;
+                    
+                    tr.querySelector('.morning-ok').textContent = mOk;
+                    tr.querySelector('.evening-ok').textContent = eOk;
+                    tr.querySelector('.total-ok-shift').textContent = totalOk;
+                    
+                    const mXpass = morningRow ? (parseFloat(morningRow['Nb B. OK Xpass not rewor']) || 0) : 0;
+                    const eXpass = eveningRow ? (parseFloat(eveningRow['Nb B. OK Xpass not rewor']) || 0) : 0;
+                    const totalXpass = mXpass + eXpass;
+                    tr.querySelector('.xpass-not-rewor').textContent = totalXpass;
+                    
+                    let totalFpyVal = '-';
+                    if (totalNb > 0) {
+                        totalFpyVal = ((totalOk / totalNb) * 100).toFixed(2) + '%';
+                    } else if (mFPY !== null && eFPY === null) {
+                        totalFpyVal = typeof mFPY === 'number' ? (mFPY * 100).toFixed(2) + '%' : mFPY;
+                    } else if (eFPY !== null && mFPY === null) {
+                        totalFpyVal = typeof eFPY === 'number' ? (eFPY * 100).toFixed(2) + '%' : eFPY;
+                    }
+
+                    tr.querySelector('.fpy').textContent = totalFpyVal;
+                } else {
+                    tr.querySelector('.nb-board').textContent = '-';
+                    tr.querySelector('.ok-1st-pass').textContent = '-';
+                    tr.querySelector('.morning-ok').textContent = '-';
+                    tr.querySelector('.evening-ok').textContent = '-';
+                    tr.querySelector('.total-ok-shift').textContent = '-';
+                    tr.querySelector('.xpass-not-rewor').textContent = '-';
+                    tr.querySelector('.fpy').textContent = '-';
+                }
+            });
+        }
+
+        function updateDayInput(dateStr) {
+            const dayInput = document.querySelector('.add-report-form input[type="text"]:disabled');
+            if (dayInput && dateStr) {
+                const dateObj = new Date(dateStr);
+                const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                dayInput.value = days[dateObj.getDay()];
+            }
+        }
+
+        async function fetchExistingData(dateStr) {
+            try {
+                const response = await fetch(`/api/reports/mt212?date=${dateStr}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    extractedExcelData.morning = data.morning || null;
+                    extractedExcelData.evening = data.evening || null;
+                    populatePreviewTable();
+                } else {
+                    extractedExcelData.morning = null;
+                    extractedExcelData.evening = null;
+                    populatePreviewTable();
+                }
+            } catch (err) {
+                console.error('Error fetching existing data:', err);
+            }
+        }
 
         function handleExcelFile(file) {
             const reader = new FileReader();
@@ -1395,8 +1777,9 @@
                     
                     if (headerRowIndex !== -1) {
                         const jsonData = XLSX.utils.sheet_to_json(worksheet, { range: headerRowIndex });
-                        extractedExcelData = jsonData;
-                        populatePreviewTable(jsonData);
+                        const selectedShift = document.querySelector('input[name="shift_select"]:checked').value;
+                        extractedExcelData[selectedShift] = jsonData;
+                        populatePreviewTable();
                     } else {
                         alert('لم يتم العثور على ترويسة الأعمدة الصحيحة في ملف الإكسل (Test Bench / Product Name).');
                     }
@@ -1408,21 +1791,58 @@
             reader.readAsArrayBuffer(file);
         }
 
-        function populatePreviewTable(data) {
+        function populatePreviewTable() {
             const tbody = document.querySelector('#mt212-preview-table tbody');
             if(!tbody) return;
             const rows = tbody.querySelectorAll('tr');
             
+            const dateDisplay = document.getElementById('table-date-display');
+            if (dateDisplay) {
+                const now = new Date();
+                dateDisplay.textContent = now.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+            
             let matchedCount = 0;
             rows.forEach(tr => {
                 const stageKey = tr.getAttribute('data-stage');
-                const matchedRow = data.find(r => r['Test Bench / Product Name'] && r['Test Bench / Product Name'].includes(stageKey));
                 
-                if (matchedRow) {
-                    tr.querySelector('.nb-board').textContent = matchedRow['Nb board'] || '0';
-                    tr.querySelector('.ok-1st-pass').textContent = matchedRow['Nb B. OK 1st pass'] || '0';
-                    tr.querySelector('.xpass-not-rewor').textContent = matchedRow['Nb B. OK Xpass not rewor'] || '0';
-                    tr.querySelector('.fpy').textContent = (matchedRow['FPY'] !== undefined) ? (typeof matchedRow['FPY'] === 'number' ? (matchedRow['FPY'] * 100).toFixed(2) + '%' : matchedRow['FPY']) : '0';
+                const morningRow = extractedExcelData.morning ? extractedExcelData.morning.find(r => r['Test Bench / Product Name'] && r['Test Bench / Product Name'].includes(stageKey)) : null;
+                const eveningRow = extractedExcelData.evening ? extractedExcelData.evening.find(r => r['Test Bench / Product Name'] && r['Test Bench / Product Name'].includes(stageKey)) : null;
+                
+                if (morningRow || eveningRow) {
+                    const mFPY = morningRow && morningRow['FPY'] !== undefined ? morningRow['FPY'] : null;
+                    const eFPY = eveningRow && eveningRow['FPY'] !== undefined ? eveningRow['FPY'] : null;
+                    
+                    const mNb = morningRow ? (parseFloat(morningRow['Nb board']) || 0) : 0;
+                    const eNb = eveningRow ? (parseFloat(eveningRow['Nb board']) || 0) : 0;
+                    const totalNb = mNb + eNb;
+                    tr.querySelector('.nb-board').textContent = totalNb;
+                    
+                    const mOk = morningRow ? (parseFloat(morningRow['Nb B. OK 1st pass']) || 0) : 0;
+                    const eOk = eveningRow ? (parseFloat(eveningRow['Nb B. OK 1st pass']) || 0) : 0;
+                    const totalOk = mOk + eOk;
+                    tr.querySelector('.ok-1st-pass').textContent = totalOk;
+                    
+                    tr.querySelector('.morning-ok').textContent = mOk;
+                    tr.querySelector('.evening-ok').textContent = eOk;
+                    tr.querySelector('.total-ok-shift').textContent = totalOk;
+                    
+                    const mXpass = morningRow ? (parseFloat(morningRow['Nb B. OK Xpass not rewor']) || 0) : 0;
+                    const eXpass = eveningRow ? (parseFloat(eveningRow['Nb B. OK Xpass not rewor']) || 0) : 0;
+                    const totalXpass = mXpass + eXpass;
+                    tr.querySelector('.xpass-not-rewor').textContent = totalXpass;
+                    
+                    let totalFpyVal = '-';
+                    if (totalNb > 0) {
+                        totalFpyVal = ((totalOk / totalNb) * 100).toFixed(2) + '%';
+                    } else if (mFPY !== null && eFPY === null) {
+                        totalFpyVal = typeof mFPY === 'number' ? (mFPY * 100).toFixed(2) + '%' : mFPY;
+                    } else if (eFPY !== null && mFPY === null) {
+                        totalFpyVal = typeof eFPY === 'number' ? (eFPY * 100).toFixed(2) + '%' : eFPY;
+                    }
+
+                    tr.querySelector('.fpy').textContent = totalFpyVal;
+                    
                     tr.style.backgroundColor = '#ecfdf5';
                     matchedCount++;
                 } else {
@@ -1430,7 +1850,7 @@
                 }
             });
             if (matchedCount > 0) {
-                alert('تمت قراءة البيانات وتعبئة الجدول بنجاح. راجع الأرقام ثم اضغط حفظ التقرير.');
+                alert('تمت قراءة البيانات بنجاح. يمكنك إرفاق ملف الوردية الأخرى لاستكمال التقرير أو ضغط حفظ.');
             } else {
                 alert('لم يتم العثور على أي تطابق لمراحل الإنتاج في الملف.');
             }

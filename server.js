@@ -89,59 +89,101 @@ app.get('/api/production-chart', async (req, res) => {
     res.json(data);
 });
 
+const fs = require('fs');
+const dbPath = path.join(__dirname, 'reports_db.json');
+
+function readDb() {
+    if (!fs.existsSync(dbPath)) return {};
+    try {
+        return JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+    } catch (e) {
+        return {};
+    }
+}
+
+function writeDb(data) {
+    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+}
+
+const archiveDbPath = path.join(__dirname, 'archive_db.json');
+
+function readArchiveDb() {
+    if (!fs.existsSync(archiveDbPath)) return {};
+    try {
+        return JSON.parse(fs.readFileSync(archiveDbPath, 'utf8'));
+    } catch (e) {
+        return {};
+    }
+}
+
+function writeArchiveDb(data) {
+    fs.writeFileSync(archiveDbPath, JSON.stringify(data, null, 2));
+}
+
+app.get('/api/reports/mt212', (req, res) => {
+    const { date } = req.query;
+    if (!date) return res.status(400).json({ message: 'Date is required' });
+    const db = readDb();
+    res.json(db[date] || { morning: null, evening: null });
+});
+
 // Upload MT212 Report from Excel Data
 app.post('/api/upload-mt212-report', async (req, res) => {
-    if (!supabase) {
-        return res.status(500).json({ message: 'Supabase client is not configured' });
-    }
-
     try {
         const { report_date, records } = req.body;
         
-        if (!records || !Array.isArray(records)) {
+        if (!records || typeof records !== 'object') {
             return res.status(400).json({ message: 'Invalid records format' });
         }
 
-        // Map Excel columns to DB schema
-        const mappedRecords = records.map(r => ({
-            report_date: report_date,
-            production_stage: r['Test Bench / Product Name'] || 'Unknown',
-            nb_board: parseInt(r['Nb board']) || 0,
-            nb_b_1st_pass: parseInt(r['Nb B. 1st pass']) || 0,
-            nb_b_ok_1st_pass: parseInt(r['Nb B. OK 1st pass']) || 0,
-            nb_b_ok_xpass_not_rewor: parseInt(r['Nb B. OK Xpass not rewor']) || 0,
-            nb_boards_o: parseInt(r['Nb Boards O']) || 0,
-            nb_board_rewor: parseInt(r['Nb board rewor']) || 0,
-            nb_board_rework_o: parseInt(r['Nb board rework O']) || 0,
-            nb_test_run: parseInt(r['Nb test run']) || 0,
-            fpy: r['FPY'] ? r['FPY'].toString() : null,
-            nry: r['NRY'] ? r['NRY'].toString() : null,
-            rypy: r['RYPY'] ? r['RYPY'].toString() : null,
-            top_1_defect: r['Top 1 defect'] || null,
-            qty_1: parseInt(r['Qty 1']) || 0,
-            rate_1: r['Rate 1'] ? r['Rate 1'].toString() : null,
-            top_2_defect: r['Top 2 defect'] || null,
-            qty_2: parseInt(r['Qty 2']) || 0,
-            rate_2: r['Rate 2'] ? r['Rate 2'].toString() : null,
-            top_3_defect: r['Top 3 defect'] || null,
-            qty_3: parseInt(r['Qty 3']) || 0,
-            rate_3: r['Rate 3'] ? r['Rate 3'].toString() : null
-        }));
+        const db = readDb();
+        db[report_date] = records;
+        writeDb(db);
 
-        const { data, error } = await supabase
-            .from('mt212_daily_reports')
-            .insert(mappedRecords);
-
-        if (error) {
-            console.error('Supabase Insert Error:', error);
-            return res.status(500).json({ message: error.message });
-        }
-
-        res.status(200).json({ message: 'Success', data });
+        res.status(200).json({ message: 'Success' });
     } catch (err) {
         console.error('Upload handler error:', err);
         res.status(500).json({ message: 'Internal server error' });
     }
+});
+
+app.get('/api/archive/mt212', (req, res) => {
+    const archiveDb = readArchiveDb();
+    res.json(archiveDb);
+});
+
+app.delete('/api/reports/mt212', (req, res) => {
+    const { date } = req.query;
+    if (!date) return res.status(400).json({ message: 'Date is required' });
+
+    const db = readDb();
+    if (db[date]) {
+        const archiveDb = readArchiveDb();
+        archiveDb[date] = db[date];
+        writeArchiveDb(archiveDb);
+
+        delete db[date];
+        writeDb(db);
+        return res.status(200).json({ message: 'Moved to archive successfully' });
+    }
+    return res.status(404).json({ message: 'Report not found' });
+});
+
+app.post('/api/archive/restore/mt212', (req, res) => {
+    const { date } = req.body;
+    if (!date) return res.status(400).json({ message: 'Date is required' });
+
+    const archiveDb = readArchiveDb();
+    if (archiveDb[date]) {
+        const db = readDb();
+        db[date] = archiveDb[date];
+        writeDb(db);
+
+        delete archiveDb[date];
+        writeArchiveDb(archiveDb);
+        return res.status(200).json({ message: 'Restored successfully' });
+    }
+    return res.status(404).json({ message: 'Archived report not found' });
 });
 
 if (process.env.NODE_ENV !== 'production') {
